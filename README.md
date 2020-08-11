@@ -8,6 +8,7 @@ MTLT335 - CAN Interface Verification Scripts
 ### How to run the Script
 <TODO:>
 
+
 ## UART INTERFACE
 MTLT335 - UART Interface Verification Scripts
 
@@ -37,6 +38,6 @@ Verification Scripts follow following test hierarchy. To add new tests, create a
       <test_cases> </test_cases>
     </test_section>
 ```
-## To add more test cases
+### To add more test cases
 MTLT335_Tests.py file contains all the test cases and their implementation. *test_environment* class
 registers test cases and test sections. This class is responsible for running all the registered test cases and storing the results. Implementation of each test case is inside *test_script* class.
