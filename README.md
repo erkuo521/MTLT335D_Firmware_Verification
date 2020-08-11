@@ -10,7 +10,7 @@ MTLT335 - CAN Interface Verification Scripts
 
 ## UART INTERFACE
 MTLT335 - UART Interface Verification Scripts
-___
+
 ### Requirements
 1. IMU connected to HOST PC through USB-RS232 Interface
 2. Serial Port Name
