@@ -253,7 +253,7 @@ class aceinna_test_case():
 
     def get_addr_claim(self, target_data): # 1.4
         if self.debug: eval('print(k, i)', {'k':sys._getframe().f_code.co_name,'i':target_data})
-        if self.dev.type_name == 'OPEN335RI':# for 335RI not automatical send addr msg, only send one time after power on, so save and restart unit.
+        if self.dev.type_name == 'MTLT335':# for 335RI not automatical send addr msg, only send one time after power on, so save and restart unit.
             self.dev.set_to_default(pwr_rst = True)
         feedback = self.dev.get_payload_auto(auto_name = 'addr')
         measure_data = "0x{0}".format(feedback)
@@ -544,7 +544,7 @@ class aceinna_test_case():
         time.sleep(0.2)
         if self.dev.type_name == 'MTLT305D':
             self.dev.set_cmd('set_unit_behavior', [self.dev.predefine.get('unit_behavior'), 0, 1, 0, self.dev.src])
-        elif self.dev.type_name == 'OPEN335RI':
+        elif self.dev.type_name == 'MTLT335':
             self.dev.set_cmd('set_unit_behavior', [self.dev.predefine.get('unit_behavior') + pow(2, 2)])
         time.sleep(0.2)
 
@@ -625,7 +625,7 @@ class aceinna_test_case():
         if self.dev.type_name == 'MTLT305D':
             if self.dev.decode_behavior_num(int(feedback, 16))[0] != 0:
                 nosc_set = False
-        if self.dev.type_name == 'OPEN335RI':
+        if self.dev.type_name == 'MTLT335':
             if self.dev.decode_behavior_num(int(feedback, 16))[2] == 1:
                 nosc_set = False
         
@@ -849,9 +849,9 @@ class aceinna_test_case():
             enable_val = self.dev.predefine.get('unit_behavior') + pow(2, bit_idx)  #it is unit behavior byte1    
             bit_idx_rawrate = 0 # start from 0, set bit0 to 1 in unit behavior byte2. not use targetdata      
             enable_val_rawrate = self.dev.predefine.get('unit_behavior_rawrate') + pow(2, bit_idx_rawrate) #it is unit behavior byte2
-            if self.dev.type_name == 'MTLT305D' or self.dev.type_name == 'OPEN335RI_NEW':
+            if self.dev.type_name == 'MTLT305D' or self.dev.type_name == 'MTLT335_NEW':
                 self.dev.set_cmd('set_unit_behavior', [enable_val, enable_val_rawrate, 0, 0, self.dev.src])                
-            elif self.dev.type_name == 'OPEN335RI':
+            elif self.dev.type_name == 'MTLT335':
                 self.dev.set_cmd('set_unit_behavior', [enable_val])
             time.sleep(1)
             # restart if need
@@ -912,7 +912,7 @@ class aceinna_test_case():
         pkt_rate, pkt_type, dig_filter, ori_request, unit_bhr, algo_ctl = 0x60, 0x56, 0x57, 0x58, 0x59, 0x5B
         if self.dev.type_name == 'MTLT305D':
             data = [pkt_rate, pkt_type, dig_filter, ori_request, unit_bhr, algo_ctl, 0]
-        if self.dev.type_name == 'OPEN335RI':
+        if self.dev.type_name == 'MTLT335':
             data = [pkt_rate, pkt_type, dig_filter, ori_request, unit_bhr, algo_ctl, 0]
         self.dev.set_cmd('set_bank_ps1', data)
         time.sleep(0.2)
@@ -1195,7 +1195,7 @@ class aceinna_test_case():
             # input('clear cantest dbc')
             if self.dev.type_name == 'MTLT305D':
                 self.dev.set_cmd('set_unit_behavior', [value, 0, 0, 0, self.dev.src])
-            elif self.dev.type_name == 'OPEN335RI':
+            elif self.dev.type_name == 'MTLT335':
                 self.dev.set_cmd('set_unit_behavior', [value])
             time.sleep(1)
             # input('123')

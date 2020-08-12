@@ -9,7 +9,7 @@ MTLT335 - CAN Interface Verification Scripts
 
 ### How to run the Script
 1. Confirm 335 is connected
-2. update can_attribute_OPEN335RI.json file:predefine, debugmode, and others based on your FW
+2. update can_attribute_MTLT335.json file:predefine, debugmode, and others based on your FW
 3. sudo python3 main.py
 
 ## UART INTERFACE

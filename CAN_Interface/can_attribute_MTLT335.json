@@ -1,6 +1,6 @@
 {
     "name":"parameters for devices",
-    "type":"OPEN335RI_NEW",
+    "type":"MTLT335",
 
     "test_items":[],
     "start_idx": -1, 

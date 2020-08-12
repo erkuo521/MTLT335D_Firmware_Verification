@@ -237,7 +237,7 @@ class aceinna_device():
             elif ext_id in [419426304, 419426560]: # this is for ID 0x18FFF000 and 0x18FFF100
                 if self.type_name == 'MTLT305D':
                     payload = payload_without_src
-                elif self.type_name == 'OPEN335RI':
+                elif self.type_name == 'MTLT335':
                     payload = [self.src] + payload_without_src
                 self.driver.send_can_msg(ext_id, payload) 
                 time.sleep(0.1)  
@@ -493,7 +493,7 @@ class aceinna_device():
         # set unit behavior based on different unit type
         if self.type_name == 'MTLT305D':
             self.set_cmd('set_unit_behavior', [self.default_confi['unit_behavior'], self.default_confi['unit_behavior_rawrate'], 0, 0, self.src])
-        elif self.type_name == 'OPEN335RI':
+        elif self.type_name == 'MTLT335':
             # self.set_cmd('set_unit_behavior', [self.default_confi['unit_behavior']])
             self.set_cmd('set_unit_behavior', [self.default_confi['unit_behavior'], self.default_confi['unit_behavior_rawrate'], 0, 0, self.src])
 
