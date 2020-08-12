@@ -4,10 +4,13 @@
 MTLT335 - CAN Interface Verification Scripts
 
 ### Requirements
-<TODO:>
-### How to run the Script
-<TODO:>
+1. PiCan2 board(https://www.elektor.com/pican-2-can-bus-board-for-raspberry-pi) mounting on Raspberry Pi
+2. IMU connect to CAN_H and CAN_L of PiCan board
 
+### How to run the Script
+1. Confirm 335 is connected
+2. update can_attribute_OPEN335RI.json file:predefine, debugmode, and others based on your FW
+3. sudo python3 main.py
 
 ## UART INTERFACE
 MTLT335 - UART Interface Verification Scripts

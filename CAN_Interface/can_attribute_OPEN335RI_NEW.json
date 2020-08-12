@@ -3,7 +3,7 @@
     "type":"OPEN335RI_NEW",
 
     "test_items":[],
-    "start_idx": 67, 
+    "start_idx": -1, 
     "debug_mode":"FALSE", 
 
     "predefine":{
