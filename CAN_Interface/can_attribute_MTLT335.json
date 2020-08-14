@@ -10,9 +10,9 @@
         "fwnum":"0x0100050000",
         "types_data":6,
         "types_name":["ssi2", "rate", "accel", "rate_hr", "acc_hr", "ssi"],
-        "unit_behavior": 130,
+        "unit_behavior": 218,
         "bits_unit_bhr": 8,
-        "unit_behavior_rawrate": 128,
+        "unit_behavior2": 128,
         "pkt_rate":1,
         "pkt_type":7,
         "lpf_filter":[25, 25],
@@ -20,12 +20,12 @@
         "algo_ctl":"00D007D0070A00",
         "unit_data_nosrc":["0x92"],
         "set_bank_ps0": {
-            "ps_default":{"algo_rst":"0x50", "rse0":"0x00", "rse1":"0x00", "rse2":"0x00", "status":"0x54", "rse3":"0x00", "rse4":"0x00"},
-            "try_idx":[0, 2, 3, 4, 5]
+            "ps_default":{"algo_rst":"0x50", "save_config":"0x51", "hw_bit":"0x52", "sw_bit":"0x53", "status":"0x54", "rate_hr":"0x6B", "acc_hr":"0x6D", "rse2":"0x00"},
+            "try_idx":[0, 1, 2, 3, 4, 5, 6]
         },
         "set_bank_ps1": {
-            "ps_default":{"pkt_rate":"0x55", "pkt_type":"0x56", "lpf_filter":"0x57", "orientation":"0x58", "unit_behavior":"0x59", "rse0":"0x5B", "rse1":"0x00"},
-            "try_idx":[0, 1, 2, 3, 4]
+            "ps_default":{"pkt_rate":"0x55", "pkt_type":"0x56", "lpf_filter":"0x57", "orientation":"0x58", "unit_behavior":"0x59", "algo_ctl":"0x5B", "rse1":"0x00"},
+            "try_idx":[0, 1, 2, 3, 4, 5]
         },
 
         "exclude_list":["1.5", "1.6", "1.7", "1.8", "1.9", "4.1.7", "4.1.8", "4.2.11", "5.1.6", "5.1.7", "5.2.6", "5.2.7"],

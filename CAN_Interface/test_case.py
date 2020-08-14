@@ -435,8 +435,8 @@ class aceinna_test_case():
         '''
         if self.debug: eval('print(k, i)', {'k':sys._getframe().f_code.co_name,'i':target_data})
         if target_data.strip() == '':
-            target_data = self.dev.default_confi['unit_behavior_rawrate']
-        payload = self.dev.request_cmd('unit_behavior', unit_behavior_rawrate=True)
+            target_data = self.dev.default_confi['unit_behavior2']
+        payload = self.dev.request_cmd('unit_behavior', unit_behavior2=True)
         if payload == False: 
             self.function_measure_data[sys._getframe().f_code.co_name] = payload
             return payload
@@ -848,7 +848,7 @@ class aceinna_test_case():
             bit_idx = 2 # start from 0, set bit2 to 1 in unit behavior byte1. not use targetdata
             enable_val = self.dev.predefine.get('unit_behavior') + pow(2, bit_idx)  #it is unit behavior byte1    
             bit_idx_rawrate = 0 # start from 0, set bit0 to 1 in unit behavior byte2. not use targetdata      
-            enable_val_rawrate = self.dev.predefine.get('unit_behavior_rawrate') + pow(2, bit_idx_rawrate) #it is unit behavior byte2
+            enable_val_rawrate = self.dev.predefine.get('unit_behavior2') + pow(2, bit_idx_rawrate) #it is unit behavior byte2
             if self.dev.type_name == 'MTLT305D' or self.dev.type_name == 'MTLT335_NEW':
                 self.dev.set_cmd('set_unit_behavior', [enable_val, enable_val_rawrate, 0, 0, self.dev.src])                
             elif self.dev.type_name == 'MTLT335':
@@ -951,7 +951,7 @@ class aceinna_test_case():
                 while input('need to reset power(!!!strong recommend let unit keep power off > 3s !!!), is it finished, y/n ? ') != 'y':
                     pass
             time.sleep(2)  
-            target_data = hex(self.dev.default_confi['unit_behavior_rawrate']) # if no save repower, target data should be update to default value
+            target_data = hex(self.dev.default_confi['unit_behavior2']) # if no save repower, target data should be update to default value
             self.dev.driver.send_wakeup_msg() 
         if self.test_unit_bhr_rawrate(target_data):
             self.function_measure_data[sys._getframe().f_code.co_name] = self.function_measure_data['test_unit_bhr_rawrate']

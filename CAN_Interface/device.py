@@ -68,7 +68,7 @@ class aceinna_device():
         self.default_confi['lpf_filter'] = self.predefine.get('lpf_filter') if 'lpf_filter' in self.predefine else [25, 5] # lpf_rate, lpf_acc lpf_filter
         self.default_confi['orientation'] = self.predefine.get('orientation') if "orientation" in self.predefine else [0, 0] # import orientation default config
         self.default_confi['unit_behavior'] = self.predefine.get('unit_behavior') if 'unit_behavior' in self.predefine else 146
-        self.default_confi['unit_behavior_rawrate'] = self.predefine.get('unit_behavior_rawrate') if 'unit_behavior_rawrate' in self.predefine else 0
+        self.default_confi['unit_behavior2'] = self.predefine.get('unit_behavior2') if 'unit_behavior2' in self.predefine else 0
         self.default_confi['algo_ctl'] = self.predefine.get('algo_ctl') if 'algo_ctl' in self.predefine else "00D007D0070A00"
         self.default_confi['bank_ps0'] = [int(x, 16) for x in list(self.predefine['set_bank_ps0']['ps_default'].values())]
         self.default_confi['bank_ps1'] = [int(x, 16) for x in list(self.predefine['set_bank_ps1']['ps_default'].values())]
@@ -149,12 +149,12 @@ class aceinna_device():
         else:
             pass
 
-    def request_cmd(self, cmd_name, unit_behavior_rawrate=False):
+    def request_cmd(self, cmd_name, unit_behavior2=False):
         '''
         send cmd and get feedback, based on cmd_type. refer to json
         cmd_names are ['fw_version', 'ecu_id', 'hw_bit', 'sw_bit', 'status', 'pkt_rate', 'pkt_type', 
         'lpf_filter', 'orientation', 'unit_behavior', 'algo_ctl']
-        unit_behavior_rawrate is True will receive 3 bytes in feedback, for FW update version.19.1.81 or above
+        unit_behavior2 is True will receive 3 bytes in feedback, for FW update version.19.1.81 or above
         '''
         pgn_des = self.get_item_json(namestr = cmd_name)
         if len(pgn_des):
@@ -170,7 +170,7 @@ class aceinna_device():
                 if self.debug: eval('print(k, i, j)', {'k':sys._getframe().f_code.co_name,'i':[hex(x) for x in data] + [cmd_idx] + [cmd_name], 'j':self.req_feedback_payload[cmd_idx]})            
                 if self.req_feedback_payload[cmd_idx] != None:
                     temp_payload = self.req_feedback_payload[cmd_idx]['payload']
-                    if self.type_name == 'MTLT305D' and cmd_name == 'unit_behavior' and unit_behavior_rawrate == False: # for 305D only return first 2 bytes
+                    if self.type_name == 'MTLT305D' and cmd_name == 'unit_behavior' and unit_behavior2 == False: # for 305D only return first 2 bytes
                         return temp_payload[0:4]
                     return temp_payload
                 else:
@@ -455,12 +455,12 @@ class aceinna_device():
         for i in ['bank_ps0', 'bank_ps1']:
             self.set_cmd('set_' + i, self.default_confi[i])
         # check whether can get unit behavior or not, to confirm the right feedbac from unit. then can start to set.
-        payload = self.request_cmd('unit_behavior', unit_behavior_rawrate=True)
+        payload = self.request_cmd('unit_behavior', unit_behavior2=True)
         for i in range(3):   # some times unit will no feedback for 80FF59 Request, need to restart by SW or manualy restart in below
             if payload == False: 
                 self.set_cmd('save_config', [2]) # save and power reset
                 time.sleep(0.4)
-                payload = self.request_cmd('unit_behavior', unit_behavior_rawrate=True)
+                payload = self.request_cmd('unit_behavior', unit_behavior2=True)
         while payload == False:
             if self.auto_power.enabled: # only if enabled, it will power on and off by gpio automaticaly.  default will not use auto-power, need manual power on and off
                 self.auto_power.power_off()
@@ -470,7 +470,7 @@ class aceinna_device():
                 while input('need to reset power(!!!strong recommend let unit keep power off > 3s !!!), is it finished, y/n ? ') != 'y':
                     pass
             time.sleep(1)   
-            payload = self.request_cmd('unit_behavior', unit_behavior_rawrate=True)
+            payload = self.request_cmd('unit_behavior', unit_behavior2=True)
         # set unit behavior to 0, and then configure it to default value based on JSON. alos configure all other items
         # fb_lth_bytes = self.get_item_json('unit_behavior')['fb_length']
         disablebit = int(payload[2:4], 16)
@@ -492,10 +492,10 @@ class aceinna_device():
         time.sleep(1)
         # set unit behavior based on different unit type
         if self.type_name == 'MTLT305D':
-            self.set_cmd('set_unit_behavior', [self.default_confi['unit_behavior'], self.default_confi['unit_behavior_rawrate'], 0, 0, self.src])
+            self.set_cmd('set_unit_behavior', [self.default_confi['unit_behavior'], self.default_confi['unit_behavior2'], 0, 0, self.src])
         elif self.type_name == 'MTLT335':
             # self.set_cmd('set_unit_behavior', [self.default_confi['unit_behavior']])
-            self.set_cmd('set_unit_behavior', [self.default_confi['unit_behavior'], self.default_confi['unit_behavior_rawrate'], 0, 0, self.src])
+            self.set_cmd('set_unit_behavior', [self.default_confi['unit_behavior'], self.default_confi['unit_behavior2'], 0, 0, self.src])
 
         time.sleep(1)
         if pwr_rst: # check whether support sw-reboot or not
