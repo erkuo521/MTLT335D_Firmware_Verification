@@ -74,12 +74,10 @@ class aceinna_test_case():
         self.test_case.append(['1.3', 'get_dev_src', 'self.test_file.write([item, self.get_dev_src(targetdata), self.function_measure_data[key]])', '0x80'])
         self.test_case.append(['1.4', 'get_addr_claim', 'self.test_file.write([item, self.get_addr_claim(targetdata), self.function_measure_data[key]])', '83'])
         self.test_case.append(['1.5', 'verify_addr_saved', 'self.test_file.write([item, self.verify_addr_saved(targetdata), self.function_measure_data[key]])', '0x87'])
-        # self.test_case.append(['1.6', '', 'self.test_file.write([item])', ''])
-        # self.test_case.append(['1.7', '', 'self.test_file.write([item])', ''])
-        self.test_case.append(['1.6', 'verify_addr_saved_uart', 'self.test_file.write([item, self.verify_addr_saved_uart(targetdata), self.function_measure_data[key]])', '0x87'])
-        self.test_case.append(['1.7', 'verify_addr_saved_uart', 'self.test_file.write([item, self.function_measure_data[key], self.function_measure_data[key]])', ''])
-        self.test_case.append(['1.8', 'manual', 'self.test_file.write([item, sp, other_type])', ''])
-        self.test_case.append(['1.9', 'manual', 'self.test_file.write([item, sp, other_type])', ''])
+        self.test_case.append(['1.6', 'manual', 'self.test_file.write([item])', ''])
+        self.test_case.append(['1.7', 'manual', 'self.test_file.write([item])', ''])
+        # self.test_case.append(['1.6', 'verify_addr_saved_uart', 'self.test_file.write([item, self.verify_addr_saved_uart(targetdata), self.function_measure_data[key]])', '0x87'])
+        # self.test_case.append(['1.7', 'verify_addr_saved_uart', 'self.test_file.write([item, self.function_measure_data[key], self.function_measure_data[key]])', ''])
         self.test_case.append(['', '', 'self.test_file.write([item])', ''])
         self.test_case.append(['2', '', 'self.test_file.write([item])', ''])
         self.test_case.append(['2.1', 'manual', 'self.test_file.write([item, sp, other_type])', ''])
@@ -122,7 +120,7 @@ class aceinna_test_case():
         self.test_case.append(['4.2.4', 'set_pkt_type', 'self.test_file.write([item, self.set_pkt_type(targetdata), self.function_measure_data[key]])', '0x0F'])
         self.test_case.append(['4.2.5', 'set_lpf_filter', 'self.test_file.write([item, self.set_lpf_filter(targetdata), self.function_measure_data[key]])', '0x0505'])
         self.test_case.append(['4.2.6', 'set_orientation', 'self.test_file.write([item, self.set_orientation(targetdata), self.function_measure_data[key]])', '0x0009'])
-        self.test_case.append(['4.2.7', 'set_unit_behavior_new', 'self.test_file.write([item, self.set_unit_behavior_new(targetdata), self.function_measure_data[key]])', ''])
+        self.test_case.append(['4.2.7', 'set_unit_behavior', 'self.test_file.write([item, self.set_unit_behavior(targetdata), self.function_measure_data[key]])', ''])
         self.test_case.append(['4.2.8', 'set_bank_ps1', 'self.test_file.write([item, self.set_bank_ps1(targetdata), self.function_measure_data[key]])', ''])
         self.test_case.append(['4.2.9', 'set_unit_bhr_rawrate', 'self.test_file.write([item, self.set_unit_bhr_rawrate(targetdata), self.function_measure_data[key]])', '0x01'])
         self.test_case.append(['4.2.10', 'set_algo_ctl', 'self.test_file.write([item, self.set_algo_ctl(targetdata), self.function_measure_data[key]])', '00E803E8031400'])
@@ -138,7 +136,7 @@ class aceinna_test_case():
         self.test_case.append(['5.1.2', 'set_pkt_type', 'self.test_file.write([item, self.set_pkt_type(targetdata, saved_rst=True), self.function_measure_data[key]])', '0x0F'])
         self.test_case.append(['5.1.3', 'set_lpf_filter', 'self.test_file.write([item, self.set_lpf_filter(targetdata, saved_rst=True), self.function_measure_data[key]])', '0x0505'])
         self.test_case.append(['5.1.4', 'set_orientation', 'self.test_file.write([item, self.set_orientation(targetdata, saved_rst=True), self.function_measure_data[key]])', '0x0009'])
-        self.test_case.append(['5.1.5', 'set_unit_behavior_new', 'self.test_file.write([item, self.set_unit_behavior_new(targetdata, saved_rst=True), self.function_measure_data[key]])', ''])
+        self.test_case.append(['5.1.5', 'set_unit_behavior', 'self.test_file.write([item, self.set_unit_behavior(targetdata, saved_rst=True), self.function_measure_data[key]])', ''])
         self.test_case.append(['5.1.6', 'set_hw_bit_ps', 'self.test_file.write([item, self.set_hw_bit_ps(targetdata, saved_rst=True), self.function_measure_data[key]])', '0x0000'])
         self.test_case.append(['5.1.7', 'set_unit_bhr_rawrate', 'self.test_file.write([item, self.set_unit_bhr_rawrate(targetdata, saved_rst=True), self.function_measure_data[key]])', '0x01'])
         self.test_case.append(['5.1.8', 'set_algo_ctl', 'self.test_file.write([item, self.set_algo_ctl(targetdata, saved_rst=True), self.function_measure_data[key]])', '00E803E8031400'])
@@ -253,8 +251,7 @@ class aceinna_test_case():
 
     def get_addr_claim(self, target_data): # 1.4
         if self.debug: eval('print(k, i)', {'k':sys._getframe().f_code.co_name,'i':target_data})
-        if self.dev.type_name == 'MTLT335':# for 335RI not automatical send addr msg, only send one time after power on, so save and restart unit.
-            self.dev.set_to_default(pwr_rst = True)
+        self.dev.set_to_default(pwr_rst = True)
         feedback = self.dev.get_payload_auto(auto_name = 'addr')
         measure_data = "0x{0}".format(feedback)
         self.function_measure_data[sys._getframe().f_code.co_name] = measure_data  
@@ -262,15 +259,15 @@ class aceinna_test_case():
 
     def verify_addr_saved(self, target_data): # 1.5 
         if self.debug: eval('print(k, i)', {'k':sys._getframe().f_code.co_name,'i':target_data})
-        self.dev.set_cmd('set_unit_behavior', [self.dev.default_confi['unit_behavior'], 0, 0, 0, int(target_data, 16)])
+        self.dev.set_cmd('set_unit_behavior', self.dev.default_confi['unit_behavior'] + [0, 0, int(target_data, 16)])
         time.sleep(0.2)
         self.dev.set_cmd('save_config', [2]) # save and power reset
         time.sleep(1)
         addr_in = int(target_data, 16) in self.dev.driver.get_can_nodes()
         self.function_measure_data[sys._getframe().f_code.co_name] = addr_in
-        self.dev.driver.send_can_msg(id = 0x18FF5900, data = [int(target_data, 16), self.dev.default_confi['unit_behavior'], 0, 0, 0, 0x80])
+        self.dev.driver.send_can_msg(id = 0x18FF5900, data = [int(target_data, 16)] + self.dev.default_confi['unit_behavior'] + [0, 0, 0x80])
         time.sleep(0.2)
-        self.dev.driver.send_can_msg(id = 0x18FF5900, data = [int(target_data, 16), self.dev.default_confi['unit_behavior'], 0, 0, 0, 0x80])
+        self.dev.driver.send_can_msg(id = 0x18FF5900, data = [int(target_data, 16)] + self.dev.default_confi['unit_behavior'] + [0, 0, 0x80])
         time.sleep(0.2)
         self.dev.driver.send_can_msg(id = 0x18FF5100, data = [2, 0x87]) # save and power reset
         time.sleep(0.2)
@@ -289,7 +286,7 @@ class aceinna_test_case():
         if self.debug: eval('print(k, i)', {'k':sys._getframe().f_code.co_name,'i':addr_list})
         original = int(addr_list[2][-4:], 16)
         #change addr and saved
-        self.dev.set_cmd('set_unit_behavior', [self.dev.predefine.get('unit_behavior'), 0, 0, 0, int(target_data, 16)])
+        self.dev.set_cmd('set_unit_behavior', self.dev.default_confi['unit_behavior'] + [0, 0, int(target_data, 16)])
         time.sleep(0.2)
         self.dev.set_cmd('save_config', [2]) # save and power reset
         time.sleep(2)
@@ -338,12 +335,9 @@ class aceinna_test_case():
         if payload == False: 
             self.function_measure_data[sys._getframe().f_code.co_name] = payload
             return payload
-        if self.dev.get_item_json('pkt_type')['fb_length'] == 2:
-            feedback = payload[-(len_fb_bytes-1)*2:]   
-            if self.debug: eval('print(k, i)', {'k':sys._getframe().f_code.co_name,'i':feedback}) 
-        elif self.dev.get_item_json('pkt_type')['fb_length'] == 3:
+        
             len_fb_bytes = 3
-            feedback = payload[-(len_fb_bytes-1)*2:]
+            feedback = payload[-4:]
             if self.debug: eval('print(k, i)', {'k':sys._getframe().f_code.co_name,'i':['fb_byte:', len_fb_bytes,feedback]}) 
             feedback = hex(struct.unpack('<h', bytes.fromhex(feedback))[0])[2:]
         measure_data = "0x{0}".format(feedback)  
@@ -395,28 +389,18 @@ class aceinna_test_case():
         '''
         if self.debug: eval('print(k, i)', {'k':sys._getframe().f_code.co_name,'i':target_data})
         if target_data.strip() == '':
-            target_data = hex(self.dev.predefine.get('unit_behavior'))
+            target_data = self.dev.predefine.get('unit_behavior')
+        target_data_val = target_data[0] * 256 + target_data[1]
         payload = self.dev.request_cmd('unit_behavior')
         if payload == False: 
             self.function_measure_data[sys._getframe().f_code.co_name] = payload
-            return payload
-        
-        if self.dev.get_item_json('unit_behavior')['fb_length'] == 2:
-            feedback = payload[-(len_fb_bytes-1)*2:]   
-        elif self.dev.get_item_json('unit_behavior')['fb_length'] == 3 and self.dev.type_name == '335RI':
-            len_fb_bytes = 3
-            feedback = payload[-(len_fb_bytes-1)*2:]   
-            feedback = hex(struct.unpack('<h', bytes.fromhex(feedback))[0])[2:]
-        else:
-            feedback = payload[2:4]  
-
-
+            return payload        
+        feedback = payload[2:]
         # feedback = payload[-2:]    # & bitmask: 0x3F 
-        bit_mask = pow(2, self.dev.predefine['bits_unit_bhr']) - 1 # 0x3F for 5 bits, 0x1F for 4 bits
         measure_data = "0x{0}".format(feedback)     
         self.function_measure_data[sys._getframe().f_code.co_name] = measure_data
-        if self.debug: eval('print(k, i)', {'k':sys._getframe().f_code.co_name,'i':[bit_mask, measure_data]})
-        return (int(measure_data, 16) & bit_mask) == int(target_data, 16)
+        if self.debug: eval('print(k, i)', {'k':sys._getframe().f_code.co_name,'i':[measure_data]})
+        return int(measure_data, 16) == target_data_val
     
     def test_fw_version(self, target_data): # 3.7, 4.1.1
         if self.debug: eval('print(k, i)', {'k':sys._getframe().f_code.co_name,'i':target_data})
@@ -429,22 +413,6 @@ class aceinna_test_case():
         measure_data = "0x{0}".format(feedback)
         self.function_measure_data[sys._getframe().f_code.co_name] = measure_data  
         return int(measure_data, 16) == self.fw_num
-
-    def test_unit_bhr_rawrate(self, target_data): # 3.9
-        '''
-        '''
-        if self.debug: eval('print(k, i)', {'k':sys._getframe().f_code.co_name,'i':target_data})
-        if target_data.strip() == '':
-            target_data = self.dev.default_confi['unit_behavior2']
-        payload = self.dev.request_cmd('unit_behavior', unit_behavior2=True)
-        if payload == False: 
-            self.function_measure_data[sys._getframe().f_code.co_name] = payload
-            return payload
-        feedback = payload[4:6] 
-        measure_data = "0x{0}".format(feedback)   
-        if self.debug: eval('print(k, i)', {'k':sys._getframe().f_code.co_name,'i':[payload, measure_data, target_data]})  
-        self.function_measure_data[sys._getframe().f_code.co_name] = measure_data  
-        return (int(measure_data, 16) == target_data) if isinstance(target_data, int) else (int(measure_data, 16) == int(target_data, 16))
 
     def test_algo_ctl(self, target_data): # 3.10 4.1.12 Check last 6 bytes is same as defaut value
         if self.debug: eval('print(k, i)', {'k':sys._getframe().f_code.co_name,'i':target_data})
@@ -541,11 +509,8 @@ class aceinna_test_case():
         self.dev.set_cmd('set_lpf_filter', [5, 5])
         time.sleep(0.2)
         self.dev.set_cmd('set_orientation', [0, 9])
-        time.sleep(0.2)
-        if self.dev.type_name == 'MTLT305D':
-            self.dev.set_cmd('set_unit_behavior', [self.dev.predefine.get('unit_behavior'), 0, 1, 0, self.dev.src])
-        elif self.dev.type_name == 'MTLT335':
-            self.dev.set_cmd('set_unit_behavior', [self.dev.predefine.get('unit_behavior') + pow(2, 2)])
+        time.sleep(0.2)        
+        self.dev.set_cmd('set_unit_behavior', [4, 1, 0, 0, self.dev.src])
         time.sleep(0.2)
 
         if nosaved_rst == True:
@@ -607,28 +572,13 @@ class aceinna_test_case():
         payload = self.dev.request_cmd('unit_behavior')
         if payload == False: 
             self.function_measure_data[sys._getframe().f_code.co_name] = payload
-            return payload
-        
-        if self.dev.get_item_json('unit_behavior')['fb_length'] == 2:
-            len_fb_bytes = 2
-            feedback = payload[-(len_fb_bytes-1)*2:]   
-            feedback = hex(struct.unpack('B', bytes.fromhex(feedback))[0])[2:]
-        elif self.dev.get_item_json('unit_behavior')['fb_length'] == 3 and self.dev.type_name == '335RI':
-            len_fb_bytes = 3
-            feedback = payload[-(len_fb_bytes-1)*2:]
-            feedback = hex(struct.unpack('<h', bytes.fromhex(feedback))[0])[2:]
-        else:
-            feedback = payload[2:4]   
-            feedback = hex(struct.unpack('B', bytes.fromhex(feedback))[0])[2:]
+            return payload        
+        feedback = payload[2:]  
+        if self.dev.decode_behavior_num(int(feedback[:2], 16))[2] == 1:
+                nosc_set = False
+        if self.dev.decode_behavior_num(int(feedback[2:], 16))[0] == 1:
+                nosc_set = False
 
-        # feedback = payload[-2:]
-        if self.dev.type_name == 'MTLT305D':
-            if self.dev.decode_behavior_num(int(feedback, 16))[0] != 0:
-                nosc_set = False
-        if self.dev.type_name == 'MTLT335':
-            if self.dev.decode_behavior_num(int(feedback, 16))[2] == 1:
-                nosc_set = False
-        
         self.function_measure_data[sys._getframe().f_code.co_name] = nosc_set
         self.dev.set_to_default(pwr_rst = False)
         return nosc_set
@@ -648,8 +598,9 @@ class aceinna_test_case():
                 time.sleep(4)
                 self.dev.auto_power.power_on()
             else:
-                while input('need to reset power(!!!strong recommend let unit keep power off > 3s !!!), is it finished, y/n ? ') != 'y':
-                    pass
+                self.dev.set_cmd('algo_rst', [2]) # no save reset
+                # while input('need to reset power(!!!strong recommend let unit keep power off > 3s !!!), is it finished, y/n ? ') != 'y':
+                #     pass
             time.sleep(2)  
             target_data = hex(self.dev.default_confi['pkt_rate']) # if no save repower, target data should be update to default value
             self.dev.driver.send_wakeup_msg() 
@@ -685,8 +636,9 @@ class aceinna_test_case():
                 time.sleep(4)
                 self.dev.auto_power.power_on()
             else:
-                while input('need to reset power(!!!strong recommend let unit keep power off > 3s !!!), is it finished, y/n ? ') != 'y':
-                    pass
+                self.dev.set_cmd('algo_rst', [2]) # no save reset
+                # while input('need to reset power(!!!strong recommend let unit keep power off > 3s !!!), is it finished, y/n ? ') != 'y':
+                #     pass
             time.sleep(2)
             target_data = hex(self.dev.default_confi['pkt_type']) # if no save repower, target data should be update to default value
             self.dev.driver.send_wakeup_msg()
@@ -736,8 +688,9 @@ class aceinna_test_case():
                 time.sleep(4)
                 self.dev.auto_power.power_on()
             else:
-                while input('need to reset power(!!!strong recommend let unit keep power off > 3s !!!), is it finished, y/n ? ') != 'y':
-                    pass
+                self.dev.set_cmd('algo_rst', [2]) # no save reset
+                # while input('need to reset power(!!!strong recommend let unit keep power off > 3s !!!), is it finished, y/n ? ') != 'y':
+                #     pass
             time.sleep(2)
             target_data = hex(self.dev.default_confi['lpf_filter'][0]*256 + self.dev.default_confi['lpf_filter'][1]) # if no save repower, target data should be update to default value
             self.dev.driver.send_wakeup_msg() 
@@ -770,8 +723,9 @@ class aceinna_test_case():
                 time.sleep(4)
                 self.dev.auto_power.power_on()
             else:
-                while input('need to reset power(!!!strong recommend let unit keep power off > 3s !!!), is it finished, y/n ? ') != 'y':
-                    pass
+                self.dev.set_cmd('algo_rst', [2]) # no save reset
+                # while input('need to reset power(!!!strong recommend let unit keep power off > 3s !!!), is it finished, y/n ? ') != 'y':
+                #     pass
             time.sleep(1)
             target_data = hex(self.dev.default_confi['set_orientation'][0]*256 + self.dev.default_confi['set_orientation'][1]) # if no save repower, target data should be update to default value
             self.dev.driver.send_wakeup_msg() 
@@ -786,25 +740,20 @@ class aceinna_test_case():
         self.function_measure_data[sys._getframe().f_code.co_name] = measure_data  
         return int(measure_data, 16) == int(target_data, 16)
 
-    def set_unit_behavior(self, target_data, disable_bit = 0, saved_rst = False, nosaved_rst = False): # 4.2.7 5.1.5 5.2.5 invalid now, replaced by set unit behavior new().
+    def set_unit_behavior(self, target_data, disable_bit = [0, 0], saved_rst = False, nosaved_rst = False): # 4.2.7 5.1.5 5.2.5 invalid now, replaced by set unit behavior new().
         '''
-        target_data: such as '0x02', it is string of enable_bit
+        target_data: such as [218, 128], it is string of enable_bit
         '''
         self.dev.set_to_default(pwr_rst = True)
         if self.debug: eval('print(k, i)', {'k':sys._getframe().f_code.co_name,'i':target_data})
         if target_data.strip() == '':
-            target_data = hex(self.dev.default_confi['unit_behavior'])
-        payload = self.dev.request_cmd('unit_behavior')
-        if payload == False: 
-            self.function_measure_data[sys._getframe().f_code.co_name] = payload
-            return payload
-        original_behavior = int(payload[-(self.dev.get_item_json('unit_behavior')['fb_length']-1)*2:], 16)
-        enabel_bit = int(target_data, 16)
-        target_behavior = (original_behavior | enabel_bit) & (~disable_bit)
-        self.dev.set_cmd('set_unit_behavior', [enabel_bit, disable_bit, self.dev.src])
+            default_data = self.dev.default_confi['unit_behavior']
+            target_data = [default_data[0] + 4, default_data[1] + 1]
+            target_data_val = target_data[0] * 256 + target_data[0]     
+        self.dev.set_cmd('set_unit_behavior', [target_data, disable_bit, self.dev.src])
         time.sleep(0.2)
         if saved_rst == True:
-            self.dev.set_cmd('set_unit_behavior', [enabel_bit, 1, self.dev.src])
+            self.dev.set_cmd('set_unit_behavior', [target_data, disable_bit, self.dev.src])
             time.sleep(0.2)
             self.dev.set_cmd('save_config', [2]) # save and restart
             time.sleep(1)
@@ -814,27 +763,24 @@ class aceinna_test_case():
                 time.sleep(4)
                 self.dev.auto_power.power_on()
             else:
-                while input('need to reset power(!!!strong recommend let unit keep power off > 3s !!!), is it finished, y/n ? ') != 'y':
-                    pass
+                self.dev.set_cmd('algo_rst', [2]) # no save reset
+                # while input('need to reset power(!!!strong recommend let unit keep power off > 3s !!!), is it finished, y/n ? ') != 'y':
+                #     pass
             time.sleep(1)
             self.dev.driver.send_wakeup_msg() 
-            enabel_bit = hex(self.dev.default_confi['unit_behavior']) # if no save repower, target data should be update to default value
+            target_data_val = default_data[0] * 256 + default_data[1] # if no save repower, target data should be update to default value
 
         payload = self.dev.request_cmd('unit_behavior')
         if payload == False: 
             self.function_measure_data[sys._getframe().f_code.co_name] = payload
             return payload
-        feedback = payload[2:4]
-        if self.dev.get_item_json('unit_behavior')['fb_length'] == 3 and self.dev.type_name == '335RI':
-            feedback = payload[-(self.dev.get_item_json('unit_behavior')['fb_length']-1)*2:]
-            feedback = hex(struct.unpack('<h', bytes.fromhex(feedback))[0])[2:]
+        feedback = payload[2:]        
  
         self.dev.set_to_default(pwr_rst = False)
         if self.debug: eval('print(k, i, j, m, n, h)', {'k':sys._getframe().f_code.co_name,'i':feedback, 'j':original_behavior, 'm':enabel_bit, 'n':target_behavior, 'h':disable_bit})
         measure_data = "0x{0}".format(feedback)
         self.function_measure_data[sys._getframe().f_code.co_name] = measure_data  
-        bit_mask = pow(2, self.dev.predefine['bits_unit_bhr']) - 1 # 0x3F for 5 bits
-        return (int(measure_data, 16) & bit_mask) == enabel_bit
+        return int(measure_data, 16) == target_data_val
 
     def set_unit_behavior_new(self, targetdata, saved_rst = False, nosaved_rst = False): # 4.2.7 5.1.5 #5.2.5     
         '''
@@ -864,8 +810,9 @@ class aceinna_test_case():
                     time.sleep(4)
                     self.dev.auto_power.power_on()
                 else:
-                    while input('need to reset power(!!!strong recommend let unit keep power off > 3s !!!), is it finished, y/n ? ') != 'y':
-                        pass
+                    self.dev.set_cmd('algo_rst', [2]) # no save reset
+                    # while input('need to reset power(!!!strong recommend let unit keep power off > 3s !!!), is it finished, y/n ? ') != 'y':
+                    #     pass
                 time.sleep(1)
                 self.dev.driver.send_wakeup_msg() 
 
@@ -927,38 +874,7 @@ class aceinna_test_case():
             return True
         else:
             self.function_measure_data[sys._getframe().f_code.co_name] = False
-            return False
-
-    def set_unit_bhr_rawrate(self, target_data, saved_rst = False, nosaved_rst = False): # 4.2.9 5.1.7 5.2.7
-        '''
-        target_data: such as 80 92 00 00 00 80
-        '''
-        if self.debug: eval('print(k, i)', {'k':sys._getframe().f_code.co_name,'i':target_data})
-        self.dev.set_to_default()
-        time.sleep(3)       
-        data = [0, int(target_data, 16), 0, 0, self.dev.src]   #enable raw rate in unit behavior
-        self.dev.set_cmd('set_unit_behavior', data)
-        time.sleep(0.2)
-        if saved_rst == True:
-            self.dev.set_cmd('save_config', [2]) # save and restart
-            time.sleep(1)
-        if nosaved_rst == True:
-            if self.dev.auto_power.enabled: # only if enabled, it will power on and off by gpio automaticaly.  default will not use auto-power, need manual power on and off
-                self.dev.auto_power.power_off()
-                time.sleep(4)
-                self.dev.auto_power.power_on()
-            else:
-                while input('need to reset power(!!!strong recommend let unit keep power off > 3s !!!), is it finished, y/n ? ') != 'y':
-                    pass
-            time.sleep(2)  
-            target_data = hex(self.dev.default_confi['unit_behavior2']) # if no save repower, target data should be update to default value
-            self.dev.driver.send_wakeup_msg() 
-        if self.test_unit_bhr_rawrate(target_data):
-            self.function_measure_data[sys._getframe().f_code.co_name] = self.function_measure_data['test_unit_bhr_rawrate']
-            return True
-        else:
-            self.function_measure_data[sys._getframe().f_code.co_name] = self.function_measure_data['test_unit_bhr_rawrate']
-            return False        
+            return False           
 
     def set_algo_ctl(self, target_data, saved_rst = False, nosaved_rst = False): # 4.2.10 5.1.8 5.2.8 Check last 6 bytes is same as set value
         if self.debug: eval('print(k, i)', {'k':sys._getframe().f_code.co_name,'i':target_data})
@@ -1079,8 +995,9 @@ class aceinna_test_case():
                 time.sleep(4)
                 self.dev.auto_power.power_on()
             else:
-                while input('need to reset power(!!!strong recommend let unit keep power off > 3s !!!), is it finished, y/n ? ') != 'y':
-                    pass
+                self.dev.set_cmd('algo_rst', [2]) # no save reset
+                # while input('need to reset power(!!!strong recommend let unit keep power off > 3s !!!), is it finished, y/n ? ') != 'y':
+                #     pass
             time.sleep(1)
             self.dev.driver.send_wakeup_msg() 
             if self.test_hw_bit(target_data='0x0000'):
@@ -1184,19 +1101,13 @@ class aceinna_test_case():
         if self.debug: eval('print(k, i)', {'k':sys._getframe().f_code.co_name,'i':target_data})
         self.dev.set_to_default()
         time.sleep(3)
-        # enable_list       = [0x01, 0x02, 0x04, 0x08, 0x10]
-        # disable_list      = [0x01, 0x02, 0x04, 0x08, 0x10]
         bhr_set_ok        = True
         bitsnum = self.dev.predefine['bits_unit_bhr']
         enable_list, disable_list = [pow(2, x) for x in range(bitsnum)], [pow(2,x) for x in range(bitsnum)]
-        len_fb_bytes = self.dev.get_item_json('unit_behavior')['fb_length']
 
         for idx, value in enumerate(enable_list):
             # input('clear cantest dbc')
-            if self.dev.type_name == 'MTLT305D':
-                self.dev.set_cmd('set_unit_behavior', [value, 0, 0, 0, self.dev.src])
-            elif self.dev.type_name == 'MTLT335':
-                self.dev.set_cmd('set_unit_behavior', [value])
+            self.dev.set_cmd('set_unit_behavior', [value, value, 0, 0, self.dev.src])            
             time.sleep(1)
             # input('123')
             payload = self.dev.request_cmd('unit_behavior')
@@ -1204,30 +1115,24 @@ class aceinna_test_case():
             if payload == False: 
                 bhr_set_ok = False
             else:
-                # feedback_pl = payload[-((len_fb_bytes-1)*2):]
-                feedback_pl = payload[2:]
-                if len(feedback_pl) == 4:
-                    feedback = hex(struct.unpack('<h', bytes.fromhex(feedback_pl))[0])[2:]
-                if len(feedback_pl) == 2:
-                    feedback = hex(struct.unpack('B', bytes.fromhex(feedback_pl))[0])[2:]
-                if self.debug: eval('print(k, i, j, m)', {'k':sys._getframe().f_code.co_name,'i':bhr_set_ok,'j':[idx, value, payload, 'feedback:', feedback], 'm':['enable list:', enable_list]})
-                get_bhr = int(feedback, 16)
-                if self.dev.decode_behavior_num(get_bhr)[idx] == 0:
+                if self.debug: eval('print(k, i, j, m)', {'k':sys._getframe().f_code.co_name,'i':bhr_set_ok,'j':[idx, value, payload], 'm':['enable list:', enable_list]})
+                if self.dev.decode_behavior_num(int(payload[2:4]))[idx] == 0:
+                    bhr_set_ok = False
+                if self.dev.decode_behavior_num(int(payload[4:]))[idx] == 0:
                     bhr_set_ok = False
         
-        if self.dev.type_name == 'MTLT305D':
-            for idx, value in enumerate(disable_list):
-                self.dev.set_cmd('set_unit_behavior', [0, 0, value, 0, self.dev.src])
-                time.sleep(0.2)
-                payload = self.dev.request_cmd('unit_behavior')
-                if payload == False: 
+        for idx, value in enumerate(disable_list):
+            self.dev.set_cmd('set_unit_behavior', [0, 0, value, value, self.dev.src])
+            time.sleep(0.2)
+            payload = self.dev.request_cmd('unit_behavior')
+            if payload == False: 
+                bhr_set_ok = False
+            else:
+                if self.dev.decode_behavior_num(int(payload[2:4]))[idx] == 1:
                     bhr_set_ok = False
-                else:
-                    # get_bhr = int(payload[-((len_fb_bytes-1)*2):], 16)
-                    get_bhr = int(payload[2:4], 16)
-                    if self.dev.decode_behavior_num(get_bhr)[0] == 1:
-                        bhr_set_ok = False
-                if self.debug: eval('print(k, i, j)', {'k':sys._getframe().f_code.co_name,'i':bhr_set_ok,'j':[idx, value]})
+                if self.dev.decode_behavior_num(int(payload[4:]))[idx] == 1:
+                    bhr_set_ok = False
+            if self.debug: eval('print(k, i, j)', {'k':sys._getframe().f_code.co_name,'i':bhr_set_ok,'j':[idx, value]})
 
         self.function_measure_data[sys._getframe().f_code.co_name] = bhr_set_ok      
         return bhr_set_ok

@@ -65,10 +65,9 @@ class aceinna_device():
         if self.debug: eval('print(k)', {'k':sys._getframe().f_code.co_name})
         self.default_confi['pkt_rate'] = self.predefine.get('pkt_rate') if 'pkt_rate' in self.predefine else 1 # pkt_rate index default config, if it is 1--100hz, if it's 5---20hz
         self.default_confi['pkt_type'] = self.predefine.get('pkt_type') if 'pkt_type' in self.predefine else 7
-        self.default_confi['lpf_filter'] = self.predefine.get('lpf_filter') if 'lpf_filter' in self.predefine else [25, 5] # lpf_rate, lpf_acc lpf_filter
+        self.default_confi['lpf_filter'] = self.predefine.get('lpf_filter') if 'lpf_filter' in self.predefine else [25, 25] # lpf_rate, lpf_acc lpf_filter
         self.default_confi['orientation'] = self.predefine.get('orientation') if "orientation" in self.predefine else [0, 0] # import orientation default config
-        self.default_confi['unit_behavior'] = self.predefine.get('unit_behavior') if 'unit_behavior' in self.predefine else 146
-        self.default_confi['unit_behavior2'] = self.predefine.get('unit_behavior2') if 'unit_behavior2' in self.predefine else 0
+        self.default_confi['unit_behavior'] = self.predefine.get('unit_behavior') if 'unit_behavior' in self.predefine else [218, 128]
         self.default_confi['algo_ctl'] = self.predefine.get('algo_ctl') if 'algo_ctl' in self.predefine else "00D007D0070A00"
         self.default_confi['bank_ps0'] = [int(x, 16) for x in list(self.predefine['set_bank_ps0']['ps_default'].values())]
         self.default_confi['bank_ps1'] = [int(x, 16) for x in list(self.predefine['set_bank_ps1']['ps_default'].values())]
@@ -149,7 +148,7 @@ class aceinna_device():
         else:
             pass
 
-    def request_cmd(self, cmd_name, unit_behavior2=False):
+    def request_cmd(self, cmd_name):
         '''
         send cmd and get feedback, based on cmd_type. refer to json
         cmd_names are ['fw_version', 'ecu_id', 'hw_bit', 'sw_bit', 'status', 'pkt_rate', 'pkt_type', 
@@ -168,11 +167,8 @@ class aceinna_device():
                 self.driver.send_can_msg(self.req_ext_id_templete | cmd_idx, data)  
                 time.sleep(2)          
                 if self.debug: eval('print(k, i, j)', {'k':sys._getframe().f_code.co_name,'i':[hex(x) for x in data] + [cmd_idx] + [cmd_name], 'j':self.req_feedback_payload[cmd_idx]})            
-                if self.req_feedback_payload[cmd_idx] != None:
-                    temp_payload = self.req_feedback_payload[cmd_idx]['payload']
-                    if self.type_name == 'MTLT305D' and cmd_name == 'unit_behavior' and unit_behavior2 == False: # for 305D only return first 2 bytes
-                        return temp_payload[0:4]
-                    return temp_payload
+                if self.req_feedback_payload[cmd_idx] != None:                    
+                    return self.req_feedback_payload[cmd_idx]['payload']
                 else:
                     pass # to be added                 
             return False 
@@ -221,8 +217,9 @@ class aceinna_device():
                         time.sleep(4)
                         self.auto_power.power_on()
                     else:
-                        while input('need to reset power(!!!strong recommend let unit keep power off > 3s !!!), is it finished, y/n ? ') != 'y':
-                            pass
+                        self.set_cmd('algo_rst', [2]) # no save reset
+                        # while input('need to reset power(!!!strong recommend let unit keep power off > 3s !!!), is it finished, y/n ? ') != 'y':
+                        #     pass
                     time.sleep(1) 
                     self.driver.send_wakeup_msg()
                 else:
@@ -234,11 +231,8 @@ class aceinna_device():
                     time.sleep(0.5)
                     self.driver.send_wakeup_msg()  
                     time.sleep(0.3) 
-            elif ext_id in [419426304, 419426560]: # this is for ID 0x18FFF000 and 0x18FFF100
-                if self.type_name == 'MTLT305D':
-                    payload = payload_without_src
-                elif self.type_name == 'MTLT335':
-                    payload = [self.src] + payload_without_src
+            elif ext_id in [419426304, 419426560]: # this is for ID 0x18FFF000 and 0x18FFF100                
+                payload = [self.src] + payload_without_src
                 self.driver.send_can_msg(ext_id, payload) 
                 time.sleep(0.1)  
                 self.driver.send_can_msg(ext_id, payload)     
@@ -334,8 +328,9 @@ class aceinna_device():
                 time.sleep(4)
                 self.auto_power.power_on()
             else:
-                while input('need to reset power(!!!strong recommend let unit keep power off > 3s !!!), is it finished, y/n ? ') != 'y':
-                    pass
+                self.set_cmd('algo_rst', [2]) # no save reset
+                # while input('need to reset power(!!!strong recommend let unit keep power off > 3s !!!), is it finished, y/n ? ') != 'y':
+                #     pass
             self.driver.send_wakeup_msg()
             payload = self.request_cmd('pkt_rate')            
         odr_idx = int(payload[-2:], 16)
@@ -455,31 +450,29 @@ class aceinna_device():
         for i in ['bank_ps0', 'bank_ps1']:
             self.set_cmd('set_' + i, self.default_confi[i])
         # check whether can get unit behavior or not, to confirm the right feedbac from unit. then can start to set.
-        payload = self.request_cmd('unit_behavior', unit_behavior2=True)
+        payload = self.request_cmd('unit_behavior')
         for i in range(3):   # some times unit will no feedback for 80FF59 Request, need to restart by SW or manualy restart in below
             if payload == False: 
                 self.set_cmd('save_config', [2]) # save and power reset
                 time.sleep(0.4)
-                payload = self.request_cmd('unit_behavior', unit_behavior2=True)
+                payload = self.request_cmd('unit_behavior')
         while payload == False:
             if self.auto_power.enabled: # only if enabled, it will power on and off by gpio automaticaly.  default will not use auto-power, need manual power on and off
                 self.auto_power.power_off()
                 time.sleep(4)
                 self.auto_power.power_on()
             else:
-                while input('need to reset power(!!!strong recommend let unit keep power off > 3s !!!), is it finished, y/n ? ') != 'y':
-                    pass
+                self.set_cmd('algo_rst', [2]) # no save reset
+                # while input('need to reset power(!!!strong recommend let unit keep power off > 3s !!!), is it finished, y/n ? ') != 'y':
+                #     pass
             time.sleep(1)   
-            payload = self.request_cmd('unit_behavior', unit_behavior2=True)
+            payload = self.request_cmd('unit_behavior')
         # set unit behavior to 0, and then configure it to default value based on JSON. alos configure all other items
         # fb_lth_bytes = self.get_item_json('unit_behavior')['fb_length']
         disablebit = int(payload[2:4], 16)
         disablebit_rawrate = int(payload[4:6], 16)
-        time.sleep(1)
-        if self.type_name == 'MTLT305D':
-            self.set_cmd('set_unit_behavior', [0, 0, disablebit, disablebit_rawrate, self.src])
-        if self.type_name == 'MTLT335RI': #335RI not fulfill disable bit function
-            self.set_cmd('set_unit_behavior', [0, disablebit, 0, self.src])
+        time.sleep(1)        
+        self.set_cmd('set_unit_behavior', [0, 0, disablebit, disablebit_rawrate, self.src])
         time.sleep(1)
         for i in ['algo_ctl', 'pkt_rate','pkt_type', 'lpf_filter', 'orientation', 'bank_ps0', 'bank_ps1']:
             if self.debug: eval('print(k, i)', {'k':sys._getframe().f_code.co_name, 'i': i})
@@ -489,13 +482,8 @@ class aceinna_device():
                 self.set_cmd('set_' + i, [int(self.default_confi['algo_ctl'][x:x+2], 16) for x in range(0,13,2)])
             else:
                 self.set_cmd('set_' + i, [self.default_confi[i]])
-        time.sleep(1)
-        # set unit behavior based on different unit type
-        if self.type_name == 'MTLT305D':
-            self.set_cmd('set_unit_behavior', [self.default_confi['unit_behavior'], self.default_confi['unit_behavior2'], 0, 0, self.src])
-        elif self.type_name == 'MTLT335':
-            # self.set_cmd('set_unit_behavior', [self.default_confi['unit_behavior']])
-            self.set_cmd('set_unit_behavior', [self.default_confi['unit_behavior'], self.default_confi['unit_behavior2'], 0, 0, self.src])
+        time.sleep(1)        
+        self.set_cmd('set_unit_behavior', self.default_confi['unit_behavior'] + [0, 0, self.src])    # set unit behavior     
 
         time.sleep(1)
         if pwr_rst: # check whether support sw-reboot or not
