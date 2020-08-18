@@ -7,7 +7,7 @@
     "debug_mode":"FALSE", 
 
     "predefine":{
-        "fwnum":"0x0100050000",
+        "fwnum":"0x0100030000",
         "types_data":6,
         "types_name":["ssi2", "rate", "accel", "rate_hr", "acc_hr", "ssi"],
         "unit_behavior": [218, 128],
@@ -17,9 +17,8 @@
         "lpf_filter":[25, 25],
         "orientation":[0, 0],
         "algo_ctl":"00D007D0070A00",
-        "unit_data_nosrc":["0x92"],
         "set_bank_ps0": {
-            "ps_default":{"algo_rst":"0x50", "save_config":"0x51", "hw_bit":"0x52", "sw_bit":"0x53", "status":"0x54", "rate_hr":"0x6B", "acc_hr":"0x6D", "rse2":"0x00"},
+            "ps_default":{"algo_rst":"0x50", "save_config":"0x51", "hw_bit":"0x52", "sw_bit":"0x53", "status":"0x54", "rate_hr":"0x6B", "acc_hr":"0x6D"},
             "try_idx":[0, 1, 2, 3, 4, 5, 6]
         },
         "set_bank_ps1": {
@@ -47,11 +46,11 @@
             {"auto_id":5, "name":"rate_hr",               "pgn": 65387, "type":"auto"},
             {"auto_id":6, "name":"acc_hr",               "pgn": 65389, "type":"auto"},
             {"auto_id":7, "name":"unknow",               "pgn": "None", "type":"auto"},
-            {"req_id":0, "name":"fw_version",           "pgn": 65242, "type":"request"},
-            {"req_id":1, "name":"ecu_id",               "pgn": 64965, "type":"request"},
-            {"req_id":2, "name":"hw_bit",               "pgn": 65362, "type":"request", "fb_length":2},
+            {"req_id":0, "name":"fw_version",           "pgn": 65242, "type":"request", "fb_length":2},
+            {"req_id":1, "name":"ecu_id",               "pgn": 64965, "type":"request", "fb_length":2},
+            {"req_id":2, "name":"hw_bit",               "pgn": 65364, "type":"request", "fb_length":2},
             {"req_id":3, "name":"sw_bit",              "pgn": 65363, "type":"request", "fb_length":4},
-            {"req_id":4, "name":"status",              "pgn": 65364, "type":"request", "fb_length":2},
+            {"req_id":4, "name":"status",              "pgn": 65362, "type":"request", "fb_length":2},
             {"req_id":5, "name":"pkt_rate",            "pgn": 65365, "type":"request", "fb_length":2},
             {"req_id":6, "name":"pkt_type",            "pgn": 65366, "type":"request", "fb_length":3},
             {"req_id":7, "name":"lpf_filter",          "pgn": 65367, "type":"request", "fb_length":3},
