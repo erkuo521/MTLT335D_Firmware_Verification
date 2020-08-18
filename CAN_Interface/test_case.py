@@ -238,7 +238,8 @@ class aceinna_test_case():
         self.test_case.append(['5.9.6', 'set_try_ps', 'self.test_file.write([item, self.function_measure_data[key], self.function_measure_data[key]])', ''])
         self.test_case.append(['5.9.7', 'set_try_ps', 'self.test_file.write([item, self.function_measure_data[key], self.function_measure_data[key]])', ''])
         self.test_case.append(['5.9.8', 'set_try_ps', 'self.test_file.write([item, self.function_measure_data[key], self.function_measure_data[key]])', ''])
-        self.test_case.append(['5.9.9', 'set_try_ps', 'self.test_file.write([item, self.function_measure_data[key], self.function_measure_data[key]])', ''])       
+        self.test_case.append(['5.9.9', 'set_try_ps', 'self.test_file.write([item, self.function_measure_data[key], self.function_measure_data[key]])', ''])    
+        13   
         self.test_case.append(['', '', 'self.test_file.write([item])', ''])
         self.test_case.append(['6', 'test_save_file', 'self.test_file.write([item, self.test_save_file(targetdata), self.function_measure_data[key]])', ''])
 
@@ -923,7 +924,7 @@ class aceinna_test_case():
         if self.debug: eval('print(k, i)', {'k':sys._getframe().f_code.co_name,'i':[target_data, payload]})
         return target_data[2:].upper() in payload.upper()
 
-    def set_try_ps(self, newps = 0x60, pstype = None, tryidx = None): # 5.9.1-5.9.9
+    def set_try_ps(self, newps = 0x60, pstype = None, tryidx = None): # 5.9.1-5.9.13
         '''
         try each ps by newps and check result is expected
         ps_type = 'set_bank_ps0', try_idx = 0 should be in try_idx list of json
@@ -938,6 +939,8 @@ class aceinna_test_case():
             try_idx = idx_list if tryidx == None else [tryidx]
             try:
                 for j in try_idx:
+                    if False in list(results.values()):
+                        break
                     if self.debug: eval('print(k,i)', {'k':sys._getframe().f_code.co_name, 'i':[i,j]})
                     cmd_name = cmdname[j] # list out of range
                     item_dict = self.dev.get_item_json(namestr = cmd_name)
@@ -960,25 +963,27 @@ class aceinna_test_case():
                             results[cmd_name] = False
                         else:
                             results[cmd_name] = True
-                        print(sys._getframe().f_code.co_name, ps_type, try_idx)
-                        
+                        if self.debug: eval('print(k,i)', {'k':sys._getframe().f_code.co_name, 'i':[ps_type, try_idx, results]})                        
                     elif item_dict.get('type') == 'auto': # auto send data msg
-                        feedback = self.get_msg_hr(target_data=cmd_name,back_default=False)
+                        feedback = self.get_msg(target_data=cmd_name,back_default=False)
                         feedback2 = self.dev.new_request_cmd(src = 0, new_pgn = 0xFF00 + newps)
                         if (feedback != False) or (feedback2 == False):
                             results[cmd_name] = False
                         else:
                             results[cmd_name] = True
+                        if self.debug: eval('print(k,i)', {'k':sys._getframe().f_code.co_name, 'i':[ps_type, try_idx, results]})
                     else:
                         print(f'no this type cmd or msg in function {sys._getframe().f_code.co_name}') 
+
+                    if self.debug or (False in list(results.values())): eval('print(k, i)', {'k':sys._getframe().f_code.co_name,'i':[i, j, results, cmd_name, item_dict, feedback, feedback2]}) 
             except Exception as e:
                 print(e, i, j, item_dict, feedback, feedback2)
         final_reslut = False if False in list(results.values()) else True
-        if self.debug: eval('print(k,i)', {'k':sys._getframe().f_code.co_name, 'i':results})
+        if self.debug or (final_reslut == False): eval('print(k,i)', {'k':sys._getframe().f_code.co_name, 'i':results})
         self.function_measure_data[sys._getframe().f_code.co_name] = final_reslut
         return final_reslut         
 
-    def get_msg_hr(self, target_data='acc_hr', back_default = True): # 4.3.6
+    def get_msg(self, target_data='acc_hr', back_default = True): # 4.3.6
         if self.debug: eval('print(k, i)', {'k':sys._getframe().f_code.co_name,'i':target_data})
         self.dev.set_cmd('set_pkt_type', [pow(2, len(self.dev.predefine.get('types_name'))) - 1])
         self.dev.set_cmd('set_pkt_rate', [1])
@@ -1034,13 +1039,15 @@ class aceinna_test_case():
 
     def try_rate_list(self, target_data, actual_measure = True): # 5.3.1-5.3.9
         '''
-        try_odr_list 
+        try_odr_list
         '''
         if self.debug: eval('print(k, i)', {'k':sys._getframe().f_code.co_name,'i':target_data})
         rate_list   = [0, 1, 2, 4, 5, 10, 20, 25, 50] # [0, 1, 2, 4, 5, 10, 20, 25, 50]
         odr_set_ok = True
         for value in rate_list:
             if self.debug: eval('print(k, i)', {'k':sys._getframe().f_code.co_name,'i':odr_set_ok})
+            if odr_set_ok == False:
+                break
             self.dev.set_cmd('set_pkt_rate', [value])   
             time.sleep(0.5)        
             if self.test_pkt_type(target_data=hex(value)) == False:
@@ -1050,9 +1057,10 @@ class aceinna_test_case():
                 pass_delta = 20 if value < 4 else 1
                 odr_mea = self.dev.measure_pkt_rate()
                 if abs(odr_mea - odr) > pass_delta:
-                    odr_set_ok = False   
+                    odr_set_ok = False 
+            if self.debug or (odr_set_ok == False): eval('print(k, i)', {'k':sys._getframe().f_code.co_name,'i':[value, odr_set_ok]})    
         self.dev.set_to_default(pwr_rst = False)
-        self.function_measure_data[sys._getframe().f_code.co_name] = odr_set_ok  
+        self.function_measure_data[sys._getframe().f_code.co_name] = odr_set_ok             
 
         return odr_set_ok
 
@@ -1071,12 +1079,15 @@ class aceinna_test_case():
         for value in type_list:
             if value > (pow(2,types_data)-1): continue
             if self.debug: eval('print(k, i)', {'k':sys._getframe().f_code.co_name,'i':type_set_ok})
+            if type_set_ok == False:
+                break
             self.dev.set_cmd('set_pkt_type', [value])
             time.sleep(0.5)
             if actual_measure == True:
                 pkt_type_mea = self.dev.measure_pkt_type(type_num = types_data)
                 if pkt_type_mea != value:
                     type_set_ok = False
+            if self.debug or (type_set_ok == False): eval('print(k, i)', {'k':sys._getframe().f_code.co_name,'i':[value, type_set_ok]}) 
         self.dev.set_to_default(pwr_rst = False)
         self.function_measure_data[sys._getframe().f_code.co_name] = type_set_ok 
         return type_set_ok  
@@ -1087,8 +1098,11 @@ class aceinna_test_case():
         lpf_list          = [0, 2, 5, 10, 20, 25, 40, 50] 
         lpf_set_ok        = True
         for value in lpf_list:
+            if lpf_set_ok == False:
+                break
             if self.set_lpf_filter(target_data = hex((value<<8) + value)) == False: 
                 lpf_set_ok = False
+            if self.debug or (lpf_set_ok == False): eval('print(k, i)', {'k':sys._getframe().f_code.co_name,'i':[value, lpf_set_ok]}) 
         self.dev.set_to_default(pwr_rst = False)
         self.function_measure_data[sys._getframe().f_code.co_name] = lpf_set_ok 
 
@@ -1121,7 +1135,9 @@ class aceinna_test_case():
 
         for idx, value in enumerate(enable_list):
             # input('clear cantest dbc')
-            self.dev.set_cmd('set_unit_behavior', [value, value, 0, 0, self.dev.src])            
+            self.dev.set_cmd('set_unit_behavior', [value, value, 0, 0, self.dev.src])  
+            if bhr_set_ok == False:
+                break          
             time.sleep(1)
             # input('123')
             payload = self.dev.request_cmd('unit_behavior')
@@ -1134,8 +1150,11 @@ class aceinna_test_case():
                     bhr_set_ok = False
                 if self.dev.decode_behavior_num(int(payload[4:]))[idx] == 0:
                     bhr_set_ok = False
+            if self.debug or (bhr_set_ok == False): eval('print(k, i)', {'k':sys._getframe().f_code.co_name,'i':[idx, value, bhr_set_ok]}) 
         
         for idx, value in enumerate(disable_list):
+            if bhr_set_ok == False:
+                break
             self.dev.set_cmd('set_unit_behavior', [0, 0, value, value, self.dev.src])
             time.sleep(0.2)
             payload = self.dev.request_cmd('unit_behavior')
@@ -1146,12 +1165,15 @@ class aceinna_test_case():
                     bhr_set_ok = False
                 if self.dev.decode_behavior_num(int(payload[4:]))[idx] == 1:
                     bhr_set_ok = False
-            if self.debug: eval('print(k, i, j)', {'k':sys._getframe().f_code.co_name,'i':bhr_set_ok,'j':[idx, value]})
+            if self.debug or (bhr_set_ok == False): eval('print(k, i)', {'k':sys._getframe().f_code.co_name,'i':[idx, value, bhr_set_ok]}) 
 
         self.function_measure_data[sys._getframe().f_code.co_name] = bhr_set_ok      
         return bhr_set_ok
 
     def try_bank_ps0_list(self, target_data, algo_rst=0x60, hw_bit=0x62, sw_bit=0x63, status_bit=0x64, hr_acc=0x5C): # 5.9.1-5.9.5
+        '''
+        replaced by self.set_try_ps()
+        '''
         if self.debug: eval('print(k)', {'k':sys._getframe().f_code.co_name})
         self.dev.set_to_default(pwr_rst = False)
         time.sleep(2)
@@ -1185,7 +1207,7 @@ class aceinna_test_case():
                 ps0_set_ok = False
             if self.debug: eval('print(k,i)', {'k':sys._getframe().f_code.co_name, 'i':ps0_set_ok})
         if hr_acc != 0x6C:
-            feedback9 = self.get_msg_hr(target_data='acc_hr',back_default=False)
+            feedback9 = self.get_msg(target_data='acc_hr',back_default=False)
             if self.debug: eval('print(k,m, i)', {'k':sys._getframe().f_code.co_name, 'm':'feedback9:','i':feedback9})
             feedback10 = self.dev.new_request_cmd(src = 0, new_pgn = 0xFF00 + hr_acc)
             if (feedback9 != False) or (feedback10 == False):
@@ -1198,6 +1220,9 @@ class aceinna_test_case():
         return ps0_set_ok
 
     def try_bank_ps1_list(self, target_data, pkt_rate = 0x75, pkt_type = 0x76, lpf_filter = 0x77, orientation = 0x78): # 5.9.6-5.9.9
+        '''
+        replaced by self.set_try_ps()
+        '''
         if self.debug: eval('print(k)', {'k':sys._getframe().f_code.co_name})
         self.dev.set_to_default(pwr_rst = False)
         time.sleep(2)
