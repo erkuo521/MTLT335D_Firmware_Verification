@@ -32,7 +32,7 @@ def main(dev_type = 'MTLT305D', bcm_pin_list = []):
 
     device_list = []
     for idx,i in enumerate(dev_nodes):
-        ad = aceinna_device(i, attribute_json = can_attribute,debug_mode = debug_main, power_gpio=gpio_list[idx])
+        ad = aceinna_device(i, attribute_json = can_attribute,debug_mode = debug_main, power_gpio=gpio_list[idx], devtype=dev_type)
         main_driver.register_dev(dev_src = i, instance_dev = ad) # regist each device to driver
         ad.add_driver(main_driver)
         ad.update_sn()

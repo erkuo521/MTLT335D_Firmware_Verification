@@ -24,9 +24,10 @@ from driver import aceinna_driver
 
 
 class aceinna_device(): 
-    def __init__(self, source_address, attribute_json, debug_mode = False, power_gpio = None):
+    def __init__(self, source_address, attribute_json, debug_mode = False, power_gpio = None, devtype=None):
         # self.power_pin = pwr_pin # positve of power pin 
         self.auto_power = power_gpio
+        self.dev_type = devtype
         self.src = source_address
         self.sn_can  = None
         self.default_confi = {}

@@ -239,7 +239,10 @@ class aceinna_test_case():
         self.test_case.append(['5.9.7', 'set_try_ps', 'self.test_file.write([item, self.function_measure_data[key], self.function_measure_data[key]])', ''])
         self.test_case.append(['5.9.8', 'set_try_ps', 'self.test_file.write([item, self.function_measure_data[key], self.function_measure_data[key]])', ''])
         self.test_case.append(['5.9.9', 'set_try_ps', 'self.test_file.write([item, self.function_measure_data[key], self.function_measure_data[key]])', ''])    
-        13   
+        self.test_case.append(['5.9.10', 'set_try_ps', 'self.test_file.write([item, self.function_measure_data[key], self.function_measure_data[key]])', ''])
+        self.test_case.append(['5.9.11', 'set_try_ps', 'self.test_file.write([item, self.function_measure_data[key], self.function_measure_data[key]])', ''])
+        self.test_case.append(['5.9.12', 'set_try_ps', 'self.test_file.write([item, self.function_measure_data[key], self.function_measure_data[key]])', ''])
+        self.test_case.append(['5.9.13', 'set_try_ps', 'self.test_file.write([item, self.function_measure_data[key], self.function_measure_data[key]])', '']) 
         self.test_case.append(['', '', 'self.test_file.write([item])', ''])
         self.test_case.append(['6', 'test_save_file', 'self.test_file.write([item, self.test_save_file(targetdata), self.function_measure_data[key]])', ''])
 
@@ -1276,7 +1279,7 @@ class aceinna_test_case():
         start_time = time.time()
         date_time = datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
         file_path = os.path.join(os.getcwd(), 'data',
-                            'can_data_{0:#X}_{1:#X}_{2}.txt'.format(self.dev.src, self.dev.sn_can, date_time))
+                            'can_data_{0:#X}_{1:#X}_{2}_{3}.txt'.format(self.dev.src, self.dev.sn_can, self.dev.dev_type, date_time))
         f = open(file_path, 'w+', 1)
         print('start save data to file in 200s, pls wait, starting time:{0}, need wati 30s, pls wait!!'.format(date_time))
         all_zero = False
