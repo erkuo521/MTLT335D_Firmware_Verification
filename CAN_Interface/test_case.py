@@ -99,7 +99,7 @@ class aceinna_test_case():
         self.test_case.append(['3.6', 'test_unit_behavior', 'self.test_file.write([item, self.test_unit_behavior(targetdata), self.function_measure_data[key]])', ''])
         self.test_case.append(['3.7', 'test_fw_version', 'self.test_file.write([item, self.test_fw_version(targetdata), self.function_measure_data[key]])', ''])
         self.test_case.append(['3.8', 'test_ecu_id', 'self.test_file.write([item, self.test_ecu_id(targetdata), self.function_measure_data[key]])', '83'])
-        self.test_case.append(['3.9', 'test_sensor_status', 'self.test_file.write([item, self.test_sensor_status(targetdata), self.function_measure_data[key]])', ['0x0000']])
+        self.test_case.append(['3.9', 'test_sensor_status', 'self.test_file.write([item, self.test_sensor_status(targetdata), self.function_measure_data[key]])', [0]])
         self.test_case.append(['3.10', 'test_sw_bit', 'self.test_file.write([item, self.test_sw_bit(targetdata), self.function_measure_data[key]])', '0x000000'])
         self.test_case.append(['3.11', 'test_hw_bit', 'self.test_file.write([item, self.test_hw_bit(targetdata), self.function_measure_data[key]])', '0x0000'])
         self.test_case.append(['3.12', 'test_algo_ctl', 'self.test_file.write([item, self.test_algo_ctl(targetdata), self.function_measure_data[key]])', ''])
@@ -492,10 +492,11 @@ class aceinna_test_case():
         if payload == False: 
             self.function_measure_data[sys._getframe().f_code.co_name] = payload
             return payload
-        feedback = payload[-2:] 
+        feedback = payload[:] 
         measure_data = "0x{0}".format(feedback)     
         self.function_measure_data[sys._getframe().f_code.co_name] = measure_data  
-        return measure_data in target_data
+        if self.debug: eval('print(k, i)', {'k':sys._getframe().f_code.co_name,'i':measure_data})
+        return int(measure_data, 16) in target_data
 
     def test_save_config(self, target_data): # 4.2.1
         if self.debug: eval('print(k, i)', {'k':sys._getframe().f_code.co_name,'i':target_data})
@@ -686,6 +687,7 @@ class aceinna_test_case():
             if self.debug: eval('print(k, i)', {'k':sys._getframe().f_code.co_name,'i':[measure_data, types_data, pkt_type_mea]})
             if pkt_type_mea != int(target_data, 16):
                 return False
+        if self.debug: eval('print(k, i)', {'k':sys._getframe().f_code.co_name,'i':[target_data, measure_data]})
         if int(measure_data, 16) != int(target_data, 16):
             return False
         return True
@@ -773,10 +775,10 @@ class aceinna_test_case():
         else:
             # target_data = [default_data[0] + 4, default_data[1] + 1]
             target_data_val = target_data[0] * 256 + target_data[0]     
-        self.dev.set_cmd('set_unit_behavior', [target_data, disable_bit, self.dev.src])
+        self.dev.set_cmd('set_unit_behavior', target_data + disable_bit.append(self.dev.src))
         time.sleep(0.2)
         if saved_rst == True:
-            self.dev.set_cmd('set_unit_behavior', [target_data, disable_bit, self.dev.src])
+            self.dev.set_cmd('set_unit_behavior', target_data + disable_bit.append(self.dev.src))
             time.sleep(0.2)
             self.dev.set_cmd('save_config', [2]) # save and restart
             time.sleep(1)
