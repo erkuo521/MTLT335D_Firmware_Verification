@@ -42,6 +42,8 @@ def main(dev_type = 'MTLT305D', bcm_pin_list = []):
     for i in device_list:
         print('start testing device_src:{0} device_sn:{1}'.format(hex(i.src), hex(i.sn_can)))
         if debug_main: eval('input([k, i, j, m])', {'k':sys._getframe().f_code.co_name,'i':hex(i.sn_can), 'j':hex(i.src), 'm':'press enter:'})
+        if  os.path.exists(os.path.join(os.getcwd(), 'data')) == False:
+            os.mkdir(os.path.join(os.getcwd(), 'data'))
         test_file = my_csv(os.path.join(os.getcwd(), 'data','result_{0:#X}_{1:#X}_{2}_FW{3}.csv'.format(i.src, i.sn_can, dev_type, can_attribute['predefine']['fwnum'])))
         main_test = aceinna_test_case(test_file, debug_mode = debug_main)
         main_test.set_test_dev(i, fwnum=int(can_attribute['predefine']['fwnum'], 16))  # need to be updated for each testing ----------input: 1        
