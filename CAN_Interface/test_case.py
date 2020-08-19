@@ -1,3 +1,8 @@
+'''
+CAN testing script
+v1.0.0 20200509 erkuo chen
+'''
+
 import os
 import sys
 import time

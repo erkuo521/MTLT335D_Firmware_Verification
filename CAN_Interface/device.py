@@ -7,7 +7,7 @@ follow http://www.waveshare.net/wiki/RS485_CAN_HAT
 or follow blog at http://skpang.co.uk/blog/archives/1220
 only store the angle, acc, rate to can_data.txt
 running in hardbyte-python-can foler, downloaded from https://bitbucket.org/hardbyte/python-can/get/4085cffd2519.zip
-@author: cek
+@author: cek_erkuo chen
 '''
 
 import os

@@ -1,6 +1,6 @@
 '''
 CAN testing script
-v1.0.0 20200509
+v1.0.0 20200509 erkuo chen
 '''
 
 import os
