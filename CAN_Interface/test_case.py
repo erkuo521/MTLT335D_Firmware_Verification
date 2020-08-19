@@ -667,16 +667,15 @@ class aceinna_test_case():
         time.sleep(0.2)
         if payload == False: 
             self.function_measure_data[sys._getframe().f_code.co_name] = payload
-            return payload        
+            return payload
         if self.dev.get_item_json('pkt_type')['fb_length'] == 2:
             len_fb_bytes = 2
             feedback = payload[-(len_fb_bytes-1)*2:]
         elif self.dev.get_item_json('pkt_type')['fb_length'] == 3:
             len_fb_bytes = 3
-            feedback = payload[-(len_fb_bytes-1)*2:]   
-            feedback = hex(struct.unpack('<h', bytes.fromhex(feedback))[0])[2:]        
+            feedback = payload[-(len_fb_bytes-1)*2:]
+            feedback = hex(struct.unpack('<h', bytes.fromhex(feedback))[0])[2:]
         # feedback = payload[-2:]
-        self.dev.set_to_default(pwr_rst = False)
         measure_data = "0x{0}".format(feedback)
         self.function_measure_data[sys._getframe().f_code.co_name] = measure_data 
         if type_measure:
@@ -687,6 +686,7 @@ class aceinna_test_case():
             if self.debug: eval('print(k, i)', {'k':sys._getframe().f_code.co_name,'i':[measure_data, types_data, pkt_type_mea]})
             if pkt_type_mea != int(target_data, 16):
                 return False
+        self.dev.set_to_default(pwr_rst = False)
         if self.debug: eval('print(k, i)', {'k':sys._getframe().f_code.co_name,'i':[target_data, measure_data]})
         if int(measure_data, 16) != int(target_data, 16):
             return False
@@ -764,21 +764,21 @@ class aceinna_test_case():
 
     def set_unit_behavior(self, target_data, disable_bit = [0, 0], saved_rst = False, nosaved_rst = False): # 4.2.7 5.1.5 5.2.5 invalid now, replaced by set unit behavior new().
         '''
-        target_data: such as [218, 128], it is string of enable_bit
+        target_data: such as [222, 129], it is string of enable_bit
         '''
         self.dev.set_to_default(pwr_rst = True)
         if self.debug: eval('print(k, i)', {'k':sys._getframe().f_code.co_name,'i':target_data})
         default_data = self.dev.default_confi['unit_behavior']
         if len(target_data) == 0:
             target_data = self.dev.default_confi['unit_behavior']
-            target_data_val = target_data[0] * 256 + target_data[0] 
+            target_data_val = target_data[0] * 256 + target_data[1] 
         else:
             # target_data = [default_data[0] + 4, default_data[1] + 1]
-            target_data_val = target_data[0] * 256 + target_data[0]     
-        self.dev.set_cmd('set_unit_behavior', target_data + disable_bit.append(self.dev.src))
+            target_data_val = target_data[0] * 256 + target_data[1]     
+        self.dev.set_cmd('set_unit_behavior', target_data + disable_bit + [self.dev.src])
         time.sleep(0.2)
         if saved_rst == True:
-            self.dev.set_cmd('set_unit_behavior', target_data + disable_bit.append(self.dev.src))
+            self.dev.set_cmd('set_unit_behavior', target_data + disable_bit + [self.dev.src])
             time.sleep(0.2)
             self.dev.set_cmd('save_config', [2]) # save and restart
             time.sleep(1)
@@ -802,9 +802,10 @@ class aceinna_test_case():
         feedback = payload[2:]        
  
         self.dev.set_to_default(pwr_rst = False)
-        if self.debug: eval('print(k, i, j, m, n, h)', {'k':sys._getframe().f_code.co_name,'i':feedback, 'j':original_behavior, 'm':enabel_bit, 'n':target_behavior, 'h':disable_bit})
+        # if self.debug: eval('print(k, i, j, m, n, h)', {'k':sys._getframe().f_code.co_name,'i':feedback, 'j':original_behavior, 'm':enabel_bit, 'n':target_behavior, 'h':disable_bit})
         measure_data = "0x{0}".format(feedback)
         self.function_measure_data[sys._getframe().f_code.co_name] = measure_data  
+        if self.debug: eval('print(k, i)', {'k':sys._getframe().f_code.co_name,'i':[target_data_val, feedback, measure_data]})
         return int(measure_data, 16) == target_data_val
 
     def set_unit_behavior_new(self, targetdata, saved_rst = False, nosaved_rst = False): # 4.2.7 5.1.5 #5.2.5     

@@ -135,8 +135,8 @@ class aceinna_device():
         pgn_des = self.get_item_json(pgnnum = pdu_msg['pgn'])
         id_name = [x for x in ['auto_id', 'req_id', 'fb_id'] if x in pgn_des][0]
         id_idx = pgn_des[id_name]
-        # if pdu_msg['pgn'] == 0xFF59 and self.debug: # debug whether one msg get or not
-        #     if self.debug: eval('print(k,i)', {'k':sys._getframe().f_code.co_name, 'i':[pgn_des, id_name, id_idx, pdu_msg]})
+        # if pdu_msg['pgn'] == 0xFF6B and self.debug: # debug whether one msg get or not
+        #     if self.debug: eval('print(k,i)', {'k':sys._getframe().f_code.co_name, 'i':[pgn_des, id_name, id_idx, pdu_msg, self.auto_msg_queue[id_idx].qsize()]})
         if id_name == 'auto_id':  
             self.auto_msg_queue_lock[id_idx].acquire()
             self.auto_msg_queue[id_idx].put(pdu_msg)
@@ -343,11 +343,10 @@ class aceinna_device():
         self.empty_data_pkt()   
         idx_list = [self.get_item_json(x)['auto_id'] for x in self.predefine.get('types_name')]
         if self.debug: eval('print(k,j,slope)', {'k':sys._getframe().f_code.co_name, 'j': self.auto_msg_queue[idx_list[0]].qsize(), 'slope':'slope_exist:'})        
-        time.sleep(2) # wait 1s to receive packets again
-
+        time.sleep(2) # wait 1s to receive packets again        
         for i in range(type_num): # give right value to each type value in type list
+            if self.debug: eval('print(k,m )', {'k':sys._getframe().f_code.co_name, 'm':[i, idx_list[i], self.auto_msg_queue[idx_list[i]].qsize()]})
             exist_list[i]  = pow(2, i) if (self.auto_msg_queue[idx_list[i]].qsize() > 0) else 0
-
         sumexist = sum(exist_list)
         if self.debug: eval('print(k,j,slope,m )', {'k':sys._getframe().f_code.co_name, 'j': self.auto_msg_queue[idx_list[0]].qsize(), 'slope':'slope_exist:','m':exist_list})
         if sumexist == 0 & self.debug:
