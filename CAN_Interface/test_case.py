@@ -1006,7 +1006,7 @@ class aceinna_test_case():
     def set_hw_bit_ps(self, target_data, saved_rst = False, nosaved_rst = False): # 5.1.6 5.2.6
         if self.debug: eval('print(k, i)', {'k':sys._getframe().f_code.co_name,'i':target_data})
         new_hw_bit = 0x60
-        self.dev.set_cmd(cmd_name = 'set_bank_ps0', payload_without_src = [0x50, 0x51, 0x52, 0x53, new_hw_bit, 0x6B, 0x6D])
+        self.dev.set_cmd(cmd_name = 'set_bank_ps0', payload_without_src = [0x50, 0x51, new_hw_bit, 0x53, 0x54, 0x6B, 0x6D])
         time.sleep(0.2)
         if saved_rst == True:
             self.dev.set_cmd('save_config', [2]) # save and restart
