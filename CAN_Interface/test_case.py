@@ -1147,6 +1147,14 @@ class aceinna_test_case():
         bitsnum = self.dev.predefine['bits_unit_bhr']
         enable_list, disable_list = [pow(2, x) for x in range(bitsnum)], [pow(2,x) for x in range(bitsnum)]
 
+        # keep 2 bytes to 0 in unit behavior
+        payload = self.dev.request_cmd('unit_behavior')  
+        time.sleep(1)        
+        disablebit = int(payload[2:4], 16)
+        disablebit_rawrate = int(payload[4:6], 16)              
+        self.dev.set_cmd('set_unit_behavior', [0, 0, disablebit, disablebit_rawrate, self.dev.src])
+        time.sleep(1) 
+
         for idx, value in enumerate(enable_list):
             # input('clear cantest dbc')
             self.dev.set_cmd('set_unit_behavior', [value, value, 0, 0, self.dev.src])  
@@ -1160,11 +1168,15 @@ class aceinna_test_case():
                 bhr_set_ok = False
             else:
                 if self.debug: eval('print(k, i, j, m)', {'k':sys._getframe().f_code.co_name,'i':bhr_set_ok,'j':[idx, value, payload], 'm':['enable list:', enable_list]})
-                if self.dev.decode_behavior_num(int(payload[2:4]))[idx] == 0:
+                if self.dev.decode_behavior_num(int(payload[2:4], 16))[idx] == 0:
                     bhr_set_ok = False
-                if self.dev.decode_behavior_num(int(payload[4:]))[idx] == 0:
+                if self.dev.decode_behavior_num(int(payload[4:], 16))[idx] == 0:
                     bhr_set_ok = False
             if self.debug or (bhr_set_ok == False): eval('print(k, i)', {'k':sys._getframe().f_code.co_name,'i':[idx, value, bhr_set_ok]}) 
+        
+        # keep 2 bytes to 255 in unit behavior.
+        self.dev.set_cmd('set_unit_behavior', [255, 255, 0, 0, self.dev.src])
+        time.sleep(1) 
         
         for idx, value in enumerate(disable_list):
             if bhr_set_ok == False:
@@ -1175,9 +1187,9 @@ class aceinna_test_case():
             if payload == False: 
                 bhr_set_ok = False
             else:
-                if self.dev.decode_behavior_num(int(payload[2:4]))[idx] == 1:
+                if self.dev.decode_behavior_num(int(payload[2:4], 16))[idx] == 1:
                     bhr_set_ok = False
-                if self.dev.decode_behavior_num(int(payload[4:]))[idx] == 1:
+                if self.dev.decode_behavior_num(int(payload[4:], 16))[idx] == 1:
                     bhr_set_ok = False
             if self.debug or (bhr_set_ok == False): eval('print(k, i)', {'k':sys._getframe().f_code.co_name,'i':[idx, value, bhr_set_ok]}) 
 

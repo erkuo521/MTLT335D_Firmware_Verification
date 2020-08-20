@@ -491,6 +491,7 @@ class aceinna_device():
             self.set_cmd('save_config', [2]) # save and power reset
             time.sleep(1)
         self.driver.send_wakeup_msg()
+        if self.debug: eval('print(k, i)', {'k':sys._getframe().f_code.co_name, 'i':'set default end now.'})
         return True  
 
 '''
