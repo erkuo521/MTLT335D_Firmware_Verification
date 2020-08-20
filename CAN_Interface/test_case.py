@@ -940,7 +940,7 @@ class aceinna_test_case():
         try each ps by newps and check result is expected
         ps_type = 'set_bank_ps0', try_idx = 0 should be in try_idx list of json
         '''
-        if self.debug: eval('print(k, i)', {'k':sys._getframe().f_code.co_name,'i':newps})
+        if self.debug: eval('print(k, i)', {'k':sys._getframe().f_code.co_name,'i':hex(newps)})
         ps_type = ['set_bank_ps0', 'set_bank_ps1'] if pstype == None else [pstype]
         results = {}
         for i in ps_type:
@@ -950,23 +950,23 @@ class aceinna_test_case():
             try_idx = idx_list if tryidx == None else [tryidx]
             try:
                 for j in try_idx:
-                    if False in list(results.values()):
-                        break
-                    if self.debug: eval('print(k,i)', {'k':sys._getframe().f_code.co_name, 'i':[i,j]})
+                    # if False in list(results.values()):
+                    #     break
+                    if self.debug: eval('print(k,i)', {'k':sys._getframe().f_code.co_name, 'i':[ps_type, i,j, idx_list, try_idx]})
                     cmd_name = cmdname[j] # list out of range
                     item_dict = self.dev.get_item_json(namestr = cmd_name)
-                    if self.debug: eval('print(k,i)', {'k':sys._getframe().f_code.co_name, 'i':[j, results, cmd_name, item_dict, [hex(x) for x in psval]]})
+                    if self.debug: eval('print(k,i)', {'k':sys._getframe().f_code.co_name, 'i':[results, cmd_name, item_dict, [hex(x) for x in psval]]})
                     self.dev.set_cmd(i, psval[:j] + [newps] + psval[j+1:])
                     time.sleep(0.2)
                     if item_dict.get('type') == 'set': # set cmd
                         feedback = self.dev.set_get_feedback_payload(set_fb_name = cmd_name + '_feedback')
                         feedback2 = self.dev.new_set_cmd(new_ps = newps, data = [0, self.dev.src])
-                        if self.debug: eval('print(k,i)', {'k':sys._getframe().f_code.co_name, 'i':[feedback2, type(feedback2)]})
+                        if self.debug: eval('print(k,i)', {'k':sys._getframe().f_code.co_name, 'i':[item_dict.get('type'), feedback, feedback2]})
                         if (feedback != False) or (feedback2 == False):
                             results[cmd_name] = False
                         else:
                             results[cmd_name] = True
-                        if self.debug: eval('print(k,i)', {'k':sys._getframe().f_code.co_name, 'i':[ps_type, try_idx, results]})
+                        if self.debug: eval('print(k,i)', {'k':sys._getframe().f_code.co_name, 'i':[results, item_dict.get('type'), feedback, feedback2]})
                     elif item_dict.get('type') == 'request': # request cmd
                         feedback = self.dev.request_cmd(cmd_name)
                         feedback2 = self.dev.new_request_cmd(src = 0, new_pgn = 0xFF00 + newps)
@@ -974,7 +974,7 @@ class aceinna_test_case():
                             results[cmd_name] = False
                         else:
                             results[cmd_name] = True
-                        if self.debug: eval('print(k,i)', {'k':sys._getframe().f_code.co_name, 'i':[ps_type, try_idx, results]})                        
+                        if self.debug: eval('print(k,i)', {'k':sys._getframe().f_code.co_name, 'i':[results, item_dict.get('type'), feedback, feedback2]})                        
                     elif item_dict.get('type') == 'auto': # auto send data msg
                         feedback = self.get_msg(target_data=cmd_name,back_default=False)
                         feedback2 = self.dev.new_request_cmd(src = 0, new_pgn = 0xFF00 + newps)
@@ -982,11 +982,11 @@ class aceinna_test_case():
                             results[cmd_name] = False
                         else:
                             results[cmd_name] = True
-                        if self.debug: eval('print(k,i)', {'k':sys._getframe().f_code.co_name, 'i':[ps_type, try_idx, results]})
+                        if self.debug: eval('print(k,i)', {'k':sys._getframe().f_code.co_name, 'i':[results, item_dict.get('type'), feedback, feedback2]})
                     else:
                         print(f'no this type cmd or msg in function {sys._getframe().f_code.co_name}') 
 
-                    if self.debug or (False in list(results.values())): eval('print(k, i)', {'k':sys._getframe().f_code.co_name,'i':[i, j, results, cmd_name, item_dict, feedback, feedback2]}) 
+                    if self.debug or (False in list(results.values())): eval('print(k, i)', {'k':sys._getframe().f_code.co_name,'i':[i, j, results, cmd_name, item_dict, item_dict.get('type')]}) 
             except Exception as e:
                 print(e, i, j, item_dict, feedback, feedback2)
         final_reslut = False if False in list(results.values()) else True
@@ -1177,7 +1177,7 @@ class aceinna_test_case():
         # keep 2 bytes to 255 in unit behavior.
         self.dev.set_cmd('set_unit_behavior', [255, 255, 0, 0, self.dev.src])
         time.sleep(1) 
-        
+
         for idx, value in enumerate(disable_list):
             if bhr_set_ok == False:
                 break

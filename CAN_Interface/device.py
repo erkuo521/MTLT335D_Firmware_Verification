@@ -279,8 +279,10 @@ class aceinna_device():
         try: 
             for i in range(5):
                 if self.debug: eval('print(k, i)', {'k':sys._getframe().f_code.co_name, 'i':['before for', pgn_des, id_idx, len(self.auto_msg_queue), len(self.auto_msg_queue_lock)]})
+                time.sleep(0.5)
                 self.auto_msg_queue_lock[id_idx].acquire()    
                 if self.auto_msg_queue[id_idx].empty():
+                    if self.debug: eval('print(k, i)', {'k':sys._getframe().f_code.co_name, 'i':['queue is empty']})
                     self.auto_msg_queue_lock[id_idx].release()      
                     time.sleep(0.001)      
                 else:
