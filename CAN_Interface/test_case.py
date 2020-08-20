@@ -1061,7 +1061,7 @@ class aceinna_test_case():
                 break
             self.dev.set_cmd('set_pkt_rate', [value])   
             time.sleep(0.5)        
-            if self.test_pkt_type(target_data=hex(value)) == False:
+            if self.test_pkt_rate(target_data=hex(value)) == False:
                 odr_set_ok = False
             if actual_measure == True:
                 odr = 100/value if value != 0 else 0
@@ -1087,6 +1087,7 @@ class aceinna_test_case():
             type_list          = [0, 1, 2, 4, 7, 8, 0xB, 0xF, 0xE, 0x13, 0x16, 0x17, 0x1B, 0x1C, 0x1E, 0x1F] 
             print("packet type use 5 number types")
         type_set_ok        = True
+        
         for value in type_list:
             if value > (pow(2,types_data)-1): continue
             if self.debug: eval('print(k, i)', {'k':sys._getframe().f_code.co_name,'i':type_set_ok})
@@ -1094,6 +1095,8 @@ class aceinna_test_case():
                 break
             self.dev.set_cmd('set_pkt_type', [value])
             time.sleep(0.5)
+            if self.test_pkt_type(target_data=hex(value)) == False:
+                type_set_ok = False
             if actual_measure == True:
                 pkt_type_mea = self.dev.measure_pkt_type(type_num = types_data)
                 if pkt_type_mea != value:

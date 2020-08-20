@@ -361,7 +361,7 @@ class aceinna_device():
         measure 5s, calc the average of received accel msg numbers
         ''' 
         if self.debug: eval('print(k)', {'k':sys._getframe().f_code.co_name})
-        self.set_cmd('set_pkt_type', [7])
+        self.set_cmd('set_pkt_type', [pow(2, len(self.predefine.get('types_name')))-1])
         time.sleep(0.2)
         pgn_des = self.get_item_json(namestr = 'accel')
         id_idx = pgn_des['auto_id']    
