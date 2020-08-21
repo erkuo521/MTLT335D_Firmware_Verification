@@ -151,7 +151,7 @@ class aceinna_test_case():
         self.test_case.append(['5.2.2', 'set_pkt_type', 'self.test_file.write([item, self.set_pkt_type(targetdata, nosaved_rst=True), self.function_measure_data[key]])', '0x07'])
         self.test_case.append(['5.2.3', 'set_lpf_filter', 'self.test_file.write([item, self.set_lpf_filter(targetdata, nosaved_rst=True), self.function_measure_data[key]])', '0x1905'])
         self.test_case.append(['5.2.4', 'set_orientation', 'self.test_file.write([item, self.set_orientation(targetdata, nosaved_rst=True), self.function_measure_data[key]])', '0x0000'])
-        self.test_case.append(['5.2.5', 'set_unit_behavior', 'self.test_file.write([item, self.set_unit_behavior(targetdata, nosaved_rst=True), self.function_measure_data[key]])', '0x02'])
+        self.test_case.append(['5.2.5', 'set_unit_behavior', 'self.test_file.write([item, self.set_unit_behavior(targetdata, nosaved_rst=True), self.function_measure_data[key]])', [222, 129]])
         self.test_case.append(['5.2.6', 'set_algo_ctl', 'self.test_file.write([item, self.set_algo_ctl(targetdata, nosaved_rst=True), self.function_measure_data[key]])', '00E803E8031400'])
         self.test_case.append(['5.2.7', 'set_hw_bit_ps', 'self.test_file.write([item, self.set_hw_bit_ps(targetdata, nosaved_rst=True), self.function_measure_data[key]])', '0x0000'])        
         # self.test_case.append(['', '', 'self.test_file.write([item])', ''])
