@@ -2,9 +2,9 @@
     "name":"parameters for devices",
     "type":"MTLT335",
 
-    "test_items":["5.1.5"],
+    "test_items":[],
     "start_idx": -1, 
-    "debug_mode":"TRUE", 
+    "debug_mode":"FALSE", 
 
     "predefine":{
         "fwnum":"0x0100000000",

@@ -114,7 +114,7 @@ class aceinna_test_case():
         self.test_case.append(['4.1.6', 'test_ecu_id', 'self.test_file.write([item, self.test_ecu_id(targetdata), self.function_measure_data[key]])', '83'])
         self.test_case.append(['4.1.7', 'test_hw_bit', 'self.test_file.write([item, self.test_hw_bit(targetdata), self.function_measure_data[key]])', '0x0000'])
         self.test_case.append(['4.1.8', 'test_sw_bit', 'self.test_file.write([item, self.test_sw_bit(targetdata), self.function_measure_data[key]])', '0x000000'])
-        self.test_case.append(['4.1.9', 'test_sensor_status', 'self.test_file.write([item, self.test_sensor_status(targetdata), self.function_measure_data[key]])', ['0x0000']])
+        self.test_case.append(['4.1.9', 'test_sensor_status', 'self.test_file.write([item, self.test_sensor_status(targetdata), self.function_measure_data[key]])', [0]])
         self.test_case.append(['4.1.10', 'test_unit_behavior', 'self.test_file.write([item, self.test_unit_behavior(targetdata), self.function_measure_data[key]])', ''])
         self.test_case.append(['4.1.11', 'test_algo_ctl', 'self.test_file.write([item, self.test_algo_ctl(targetdata), self.function_measure_data[key]])', ''])
         # self.test_case.append(['4.1.10', 'test_unit_behavior', 'self.test_file.write([item, self.test_unit_behavior(targetdata), self.function_measure_data[key]])', ''])
@@ -131,7 +131,7 @@ class aceinna_test_case():
         self.test_case.append(['4.2.9', 'set_algo_ctl', 'self.test_file.write([item, self.set_algo_ctl(targetdata), self.function_measure_data[key]])', '00E803E8031400'])
         self.test_case.append(['4.2.10', 'set_bank_ps1', 'self.test_file.write([item, self.set_bank_ps1(targetdata), self.function_measure_data[key]])', ''])
         self.test_case.append(['4.3', '', 'self.test_file.write([item])', ''])
-        self.test_case.append(['4.3.1', 'set_pkt_type', 'self.test_file.write([item, self.set_pkt_type(targetdata, type_measure=True), self.function_measure_data[key]])', '0x3F'])
+        self.test_case.append(['4.3.1', 'set_pkt_type', 'self.test_file.write([item, self.set_pkt_type(targetdata, type_measure=True), self.function_measure_data[key]])', 'max'])
         self.test_case.append(['4.3.2', 'set_pkt_type', 'self.test_file.write([item, self.function_measure_data[key], self.function_measure_data[key]])', ''])
         self.test_case.append(['4.3.3', 'set_pkt_type', 'self.test_file.write([item, self.function_measure_data[key], self.function_measure_data[key]])', ''])
         self.test_case.append(['4.3.4', 'set_pkt_type', 'self.test_file.write([item, self.function_measure_data[key], self.function_measure_data[key]])', ''])
@@ -645,6 +645,8 @@ class aceinna_test_case():
         if self.debug: eval('print(k, i)', {'k':sys._getframe().f_code.co_name,'i':target_data})
         if target_data.strip() == '':
             target_data = hex(self.dev.default_confi['pkt_type'])
+        if 'max' in target_data:
+            target_data = hex(pow(2, len(self.dev.predefine.get('types_name'))) - 1)
         self.dev.set_cmd('set_pkt_type', [int(target_data, 16)])
         time.sleep(0.2)
         if saved_rst == True:
@@ -676,20 +678,20 @@ class aceinna_test_case():
             feedback = payload[-(len_fb_bytes-1)*2:]
             feedback = hex(struct.unpack('<h', bytes.fromhex(feedback))[0])[2:]
         # feedback = payload[-2:]
-        measure_data = "0x{0}".format(feedback)
-        self.function_measure_data[sys._getframe().f_code.co_name] = measure_data 
+        measure_data = "0x{0}".format(feedback)        
         if type_measure:
             types_data = len(self.dev.predefine.get('types_name'))
             # default_data = hex(pow(2, types_data) - 1) # this is default num
             pkt_type_mea = self.dev.measure_pkt_type(type_num=types_data)
-            self.function_measure_data[sys._getframe().f_code.co_name] = pkt_type_mea
-            if self.debug: eval('print(k, i)', {'k':sys._getframe().f_code.co_name,'i':[measure_data, types_data, pkt_type_mea]})
-            if pkt_type_mea != int(target_data, 16):
+            if self.debug or (pkt_type_mea != int(target_data, 16)): eval('print(k, i)', {'k':sys._getframe().f_code.co_name, 
+                                                                    'i':['get cmd data:', measure_data, types_data, 'measure pkt type data:', pkt_type_mea]})
+            if pkt_type_mea != int(target_data, 16):                
                 return False
         self.dev.set_to_default(pwr_rst = False)
         if self.debug: eval('print(k, i)', {'k':sys._getframe().f_code.co_name,'i':[target_data, measure_data]})
         if int(measure_data, 16) != int(target_data, 16):
             return False
+        self.function_measure_data[sys._getframe().f_code.co_name] = True
         return True
 
     def set_lpf_filter(self, target_data, saved_rst = False, nosaved_rst = False): # 4.2.5 5.1.3 5.2.3
