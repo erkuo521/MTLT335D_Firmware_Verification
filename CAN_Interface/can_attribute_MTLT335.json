@@ -12,6 +12,7 @@
         "types_name":["ssi2", "rate", "accel", "rate_hr", "acc_hr", "ssi"],
         "unit_behavior": [218, 128],
         "bits_unit_bhr": 8,
+        "bits_unit_bhr2": [0, 1, 7],
         "pkt_rate":1,
         "pkt_type":7,
         "lpf_filter":[25, 25],

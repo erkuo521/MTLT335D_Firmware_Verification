@@ -1149,6 +1149,9 @@ class aceinna_test_case():
         bitsnum = self.dev.predefine['bits_unit_bhr']
         enable_list, disable_list = [pow(2, x) for x in range(bitsnum)], [pow(2,x) for x in range(bitsnum)]
 
+        bitnum2_list = self.dev.predefine['bits_unit_bhr2']
+        enable2_list, disable2_list = [pow(2, x) for x in bitnum2_list], [pow(2,x) for x in bitnum2_list]
+
         # keep 2 bytes to 0 in unit behavior
         payload = self.dev.request_cmd('unit_behavior')  
         time.sleep(1)        
@@ -1172,7 +1175,7 @@ class aceinna_test_case():
                 if self.debug: eval('print(k, i, j, m)', {'k':sys._getframe().f_code.co_name,'i':bhr_set_ok,'j':[idx, value, payload], 'm':['enable list:', enable_list]})
                 if self.dev.decode_behavior_num(int(payload[2:4], 16))[idx] == 0:
                     bhr_set_ok = False
-                if self.dev.decode_behavior_num(int(payload[4:], 16))[idx] == 0:
+                if (self.dev.decode_behavior_num(int(payload[4:], 16))[idx] == 0) and (value in enable2_list):
                     bhr_set_ok = False
             if self.debug or (bhr_set_ok == False): eval('print(k, i)', {'k':sys._getframe().f_code.co_name,'i':[idx, value, bhr_set_ok]}) 
         
@@ -1191,7 +1194,7 @@ class aceinna_test_case():
             else:
                 if self.dev.decode_behavior_num(int(payload[2:4], 16))[idx] == 1:
                     bhr_set_ok = False
-                if self.dev.decode_behavior_num(int(payload[4:], 16))[idx] == 1:
+                if (self.dev.decode_behavior_num(int(payload[4:], 16))[idx] == 1) and (value in disable2_list):
                     bhr_set_ok = False
             if self.debug or (bhr_set_ok == False): eval('print(k, i)', {'k':sys._getframe().f_code.co_name,'i':[idx, value, bhr_set_ok]}) 
 
